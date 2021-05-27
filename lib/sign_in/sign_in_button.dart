@@ -3,8 +3,7 @@ import 'package:health_care/button/custom_raised_button.dart';
 
 class SignInButton extends CustomRaisedButton {
   SignInButton({
-    String assetName,
-    String text,
+    @required String text,
     Color color,
     Color textColor,
     VoidCallback onPressed,
