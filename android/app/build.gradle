@@ -38,6 +38,7 @@ android {
         applicationId "com.example.health_care"
         minSdkVersion 21
         targetSdkVersion 30
+        multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }

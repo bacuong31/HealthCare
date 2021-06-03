@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Health Care</string>
-    <string name="facebook_app_id">[APP_ID]</string> <string name="fb_login_protocol_scheme">fb[APP_ID]</string>
+    <string name="facebook_app_id">807559563479221</string> <string name="fb_login_protocol_scheme">fb807559563479221</string>
 </resources>
