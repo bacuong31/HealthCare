@@ -55,18 +55,17 @@ class Auth implements AuthBase {
     final fb = FacebookLogin();
     final response = await fb.logIn(permissions: [
       FacebookPermission.publicProfile,
-      FacebookPermission.email,
     ]);
     switch (response.status){
-      case FacebookLoginStatus.Success:
+      case FacebookLoginStatus.success:
         final accessToken = response.accessToken;
         final userCredential = await _firebaseAuth.signInWithCredential(
           FacebookAuthProvider.credential(accessToken.token),
         );
         return userCredential.user;
-      case FacebookLoginStatus.Cancel:
+      case FacebookLoginStatus.cancel:
         throw FirebaseAuthException(message: ('Sign in aborted by user'));
-      case FacebookLoginStatus.Error:
+      case FacebookLoginStatus.error:
         throw FirebaseAuthException(message: response.error.developerMessage);
       default:
         throw UnimplementedError();

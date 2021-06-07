@@ -104,15 +104,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-<<<<<<< HEAD
   flutter_login_facebook:
     dependency: "direct main"
     description:
       name: flutter_login_facebook
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.0+1"
-=======
+    version: "0.4.2+3"
   flutter_search_bar:
     dependency: "direct main"
     description:
@@ -120,7 +118,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
->>>>>>> 5fa05e35d0fa1cd7e7ff7053f8c1e1268ac88037
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -179,7 +176,7 @@ packages:
       name: list_ext
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.15"
+    version: "0.2.0"
   matcher:
     dependency: transitive
     description:
