@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:health_care/constants.dart';
+import 'package:health_care/service/auth.dart';
 import 'package:health_care/sign_in/sign_in_screen.dart';
 import 'DataSearch.dart';
 
 class HeathFunctionClassInfo {
   final String Name, ImageURL;
+
 
   HeathFunctionClassInfo(this.Name, this.ImageURL);
 }
@@ -18,6 +20,17 @@ List demoList = [
 ];
 
 class MainScreen extends StatelessWidget {
+  const MainScreen({Key key, @required this.auth}) : super(key: key);
+  final AuthBase auth;
+
+  Future<void> _signOut() async{
+    try{
+      await auth.signOut();
+
+    } catch(e){
+      print(e.toString());
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,11 +61,8 @@ class MainScreen extends StatelessWidget {
                 Icons.logout,
                 color: Colors.white,
               ),
-              onPressed: () {
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => new SignInScreen()),
-                    (Route<dynamic> route) => false);
-              }),
+              onPressed: _signOut,
+          ),
         ],
       ),
       body: ListView(
