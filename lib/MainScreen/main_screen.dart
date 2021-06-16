@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:health_care/MainScreen/profile.dart';
 import 'package:health_care/constants.dart';
 import 'package:health_care/service/auth.dart';
 import 'package:health_care/sign_in/sign_in_screen.dart';
@@ -40,7 +41,9 @@ class MainScreen extends StatelessWidget {
           padding: EdgeInsets.zero,
           icon: Icon(Icons.account_circle_rounded),
           iconSize: 40,
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context,MaterialPageRoute(builder: (context) => Profile() ));
+          },
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
