@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:health_care/home_screen.dart';
 
 import 'package:health_care/landing_screen.dart';
 import 'package:health_care/service/auth.dart';
@@ -26,9 +27,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: bgColor,
       ),
 
-      home: LandingScreen(
-        auth: Auth(),
-      ),
+      home: SignInScreen(),
 
     );
   }
