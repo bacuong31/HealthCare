@@ -39,14 +39,13 @@ class LandingScreen extends StatelessWidget {
   Future<void> _createUserIfNotExist(User user) async{
     ref.doc(user.uid).get().then((DocumentSnapshot documentSnapshot) {
       if (!documentSnapshot.exists){
-        ref.doc(user.uid).set({
+        ref.add({
           'id': user.uid,
           'full name': "Chưa cập nhật",
           'phone number': "",
           'image profile': "",
           'sex' : "Chưa cập nhật",
-        })
-        .catchError((error) => print ('Error: $error'));
+        });
       }
     });
   }
