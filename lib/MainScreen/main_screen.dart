@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_care/RegulationSreen/regulation_screen.dart';
 import 'package:health_care/constants.dart';
 import 'package:health_care/service/auth.dart';
 import 'package:health_care/sign_in/sign_in_screen.dart';
@@ -6,7 +7,6 @@ import 'DataSearch.dart';
 
 class HeathFunctionClassInfo {
   final String Name, ImageURL;
-
 
   HeathFunctionClassInfo(this.Name, this.ImageURL);
 }
@@ -23,14 +23,14 @@ class MainScreen extends StatelessWidget {
   const MainScreen({Key key, @required this.auth}) : super(key: key);
   final AuthBase auth;
 
-  Future<void> _signOut() async{
-    try{
+  Future<void> _signOut() async {
+    try {
       await auth.signOut();
-
-    } catch(e){
+    } catch (e) {
       print(e.toString());
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,7 +80,7 @@ class MainScreen extends StatelessWidget {
                 primary: Colors.white,
                 backgroundColor: Colors.indigo,
                 minimumSize:
-                Size(MediaQuery.of(context).size.width * 0.8, 26.0),
+                    Size(MediaQuery.of(context).size.width * 0.8, 26.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.0),
                 ),
@@ -157,20 +157,31 @@ class MainScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      margin: EdgeInsets.only(bottom: 5.0),
-                      height: 120.0,
-                      width: 200.0,
-                      decoration: BoxDecoration(
-                        image: null, //fix later
-                        color: Colors.black12,
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(10),
+                    MaterialButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RegulationScreen(
+                                screenName: demoList[index].Name),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        height: 120.0,
+                        width: 200.0,
+                        decoration: BoxDecoration(
+                          image: null, //fix later
+                          color: Colors.black12,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10),
+                          ),
                         ),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 5.0),
+                      padding: const EdgeInsets.only(left: 5.0, top: 5.0),
                       child: Text(
                         demoList[index].Name,
                         style: TextStyle(

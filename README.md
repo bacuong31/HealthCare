@@ -1,16 +1,18 @@
-# health_care
+# Heath Care
 
-A new Flutter application.
+Ứng dụng theo dõi và cảnh báo sức khỏe.
 
-## Getting Started
+## Giới thiệu
 
-This project is a starting point for a Flutter application.
+Ứng dụng Heath Care dùng để theo dõi các chỉ số sức khỏe như nhịp tim, BMI, v.v
+và đưa ra đánh giá dựa trên khoa học, lên lịch nhắc nhở cập nhật chỉ số định kì.
 
-A few resources to get you started if this is your first Flutter project:
+Ngoài chức năng chính trên, ứng dùng còn cung cấp vài thông tin về một số bệnh,
+đem lại sự tiện lợi cho người dùng.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+### Thành viên
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- 18520013 - Trương Bá Cường
+- [18521494 - Trương Nhật Tiến](https://www.facebook.com/players.219880271/)
+
+
