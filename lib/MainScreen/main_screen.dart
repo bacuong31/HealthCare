@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+
+import 'package:health_care/MainScreen/profile.dart';
+
 import 'package:health_care/RegulationSreen/regulation_screen.dart';
+
 import 'package:health_care/constants.dart';
 import 'package:health_care/service/auth.dart';
 import 'package:health_care/sign_in/sign_in_screen.dart';
@@ -7,12 +11,11 @@ import 'DataSearch.dart';
 
 class HeathFunctionClassInfo {
   final String Name, ImageURL;
-
   HeathFunctionClassInfo(this.Name, this.ImageURL);
 }
 
 List demoList = [
-  HeathFunctionClassInfo("Kiểm tra nhịp tim", null),
+  HeathFunctionClassInfo("Kiểm tra nhịp tim", "assets/images/camera.png"),
   HeathFunctionClassInfo("Huyết áp", null),
   HeathFunctionClassInfo("Đường huyết", null),
   HeathFunctionClassInfo("Nồng độ cồn", null),
@@ -39,7 +42,11 @@ class MainScreen extends StatelessWidget {
           padding: EdgeInsets.zero,
           icon: Icon(Icons.account_circle_rounded),
           iconSize: 40,
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => Profile()),
+            );
+          },
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +77,7 @@ class MainScreen extends StatelessWidget {
               child: Text("Tìm kiếm thông tin về sức khỏe",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 18.0,
                   ))),
           Padding(
@@ -78,7 +85,7 @@ class MainScreen extends StatelessWidget {
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
                 primary: Colors.white,
-                backgroundColor: Colors.indigo,
+                backgroundColor: Colors.indigo[300],
                 minimumSize:
                     Size(MediaQuery.of(context).size.width * 0.8, 26.0),
                 shape: RoundedRectangleBorder(
@@ -134,7 +141,7 @@ class MainScreen extends StatelessWidget {
               "Theo dõi thông tin sức khỏe",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Colors.black,
                   fontSize: 18),
             ),
           ),
@@ -173,8 +180,9 @@ class MainScreen extends StatelessWidget {
                         height: 120.0,
                         width: 200.0,
                         decoration: BoxDecoration(
-                          image: null, //fix later
-                          color: Colors.black12,
+                          image: null,
+                          //fix later
+                          color: Colors.white,
                           borderRadius: const BorderRadius.all(
                             Radius.circular(10),
                           ),
@@ -188,7 +196,7 @@ class MainScreen extends StatelessWidget {
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
-                            color: Colors.white),
+                            color: Colors.black),
                         textAlign: TextAlign.start,
                       ),
                     )

@@ -3,8 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care/MainScreen/main_screen.dart';
 import 'package:health_care/home_screen.dart';
+import 'package:health_care/model/AppUser.dart';
 import 'package:health_care/service/auth.dart';
 import 'package:health_care/sign_in/sign_in_screen.dart';
+
+import 'main.dart';
+
 var ref = FirebaseFirestore.instance.collection('users');
 
 class LandingScreen extends StatelessWidget {
@@ -18,8 +22,9 @@ class LandingScreen extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           final User user = snapshot.data;
-          if (user != null){
+          if (user != null) {
             _createUserIfNotExist(user);
+
             return MainScreen(
               auth: auth,
             );
@@ -30,23 +35,36 @@ class LandingScreen extends StatelessWidget {
           );
         }
         return Scaffold(
-          body: Center(child: CircularProgressIndicator(),),
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
         );
       },
     );
-
   }
-  Future<void> _createUserIfNotExist(User user) async{
-    ref.doc(user.uid).get().then((DocumentSnapshot documentSnapshot) {
-      if (!documentSnapshot.exists){
-        ref.add({
-          'id': user.uid,
-          'full name': "Chưa cập nhật",
-          'phone number': "",
-          'image profile': "",
-          'sex' : "Chưa cập nhật",
-        });
-      }
-    });
+
+  Future<void> _createUserIfNotExist(User user) async {
+
+    DocumentSnapshot tempUserRecord = await ref.doc(user.uid).get();
+    if (!tempUserRecord.exists) {
+      await ref.doc(user.uid).set({
+        'id': user.uid,
+        'name': "",
+        'photoUrl': "",
+        'sex': "",
+        'birthday': "",
+      });
+    }
+
+    DocumentSnapshot userRecord = await ref.doc(user.uid).get();
+
+    if (userRecord.data() != null) {
+      userRecord = await ref.doc(user.uid).get();
+
+    }
+
+    currentUser = AppUser.fromDocument(userRecord);
+
+
   }
 }
