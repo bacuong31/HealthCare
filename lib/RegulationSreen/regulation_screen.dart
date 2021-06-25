@@ -1,11 +1,33 @@
+import 'dart:core';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:health_care/constants.dart';
 
-class RegulationScreen extends StatelessWidget {
+class FieldInfo {
+  final String infoName;
+  int infoValue;
+  final String measureUnit;
+
+  FieldInfo(this.infoName, this.infoValue, this.measureUnit);
+}
+
+class RegulationScreen extends StatefulWidget {
   final String screenName;
 
   const RegulationScreen({Key key, this.screenName}) : super(key: key);
+
+  @override
+  _RegulationScreenState createState() => _RegulationScreenState();
+}
+
+class _RegulationScreenState extends State<RegulationScreen> {
+  var dateTime = DateTime.utc(2021, 6, 22);
+  List<FieldInfo> listFieldInfo = new List.from([
+    new FieldInfo("Nhịp tim lúc bình thường", 90, "BPM"),
+    // new FieldInfo("Test", null, "Test"),
+  ]);
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +35,7 @@ class RegulationScreen extends StatelessWidget {
       appBar: AppBar(
         title: Transform(
             transform: Matrix4.translationValues(-28, 0.0, 0.0),
-            child: Center(child: Text(screenName))),
+            child: Center(child: Text(widget.screenName))),
       ),
       body: ListView(
         children: <Widget>[
@@ -32,29 +54,95 @@ class RegulationScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Text(
-                          "Nhịp tim lúc bình thường",
+                          listFieldInfo[0].infoName, //firstInfo
                           style: TextStyle(
                             fontSize: 17,
                           ),
                         ),
                         //TODO: Thông tin Text này dựa trên màn hình
-                        // Có những cái khác có thêm 1 thông tin bên cạnh
+                        // Có những cái khác có thêm 1 thông tin bên cạnh AKA secondInfo
                       ],
                     ),
-                    Text("90 BPM",style: TextStyle(
-                      fontSize: 16,
-                    ),),
-                    //TODO: Thông tin Text này dựa trên màn hình
-                    Text(
-                      "Lần cập nhật gần nhất: dd/mm/yyyy",
-                      style: TextStyle(
-                        fontSize: 14,
+                    RichText(
+                      // Chỉ số
+                      text: TextSpan(
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: listFieldInfo[0].infoValue.toString(),
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                          ),
+                          TextSpan(
+                            text: " " + listFieldInfo[0].measureUnit,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    //TODO: cập nhật ngày
+                    //TODO: Thông tin Text này dựa trên màn hình
+                    RichText(
+                      text: TextSpan(
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: "Lần cập nhật gần nhất: ",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black,
+                            ),
+                          ),
+                          TextSpan(
+                            text: dateTime.toString().substring(0, 10),
+                            // Chỉ lấy đến ngày
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    //TODO: Lưu dữ liệu ngày
                     MaterialButton(
                       padding: EdgeInsets.zero,
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            String _newValue = '';
+                            return AlertDialog(
+                              title: Text('Thay đổi chỉ số'),
+                              content: TextField(
+                                keyboardType: TextInputType.number,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                autofocus: true,
+                                onChanged: (value) {
+                                  _newValue = value;
+                                },
+                              ),
+                              actions: [
+                                TextButton(
+                                  child: Text('Lưu thay đổi'.toUpperCase()),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    //TODO: thay đổi = setState
+                                    setState(() {
+                                      listFieldInfo[0].infoValue = int.parse(_newValue);
+                                      dateTime = DateTime.now().toUtc();
+                                    });
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                       child: Container(
                         height: 50.0,
                         width: 240.0,
