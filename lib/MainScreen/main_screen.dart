@@ -164,7 +164,8 @@ class MainScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) => RegulationScreen(
-                                screenName: demoList[index].Name),
+                              screenName: demoList[index].Name,
+                            ),
                           ),
                         );
                       },
