@@ -48,16 +48,19 @@ class MainScreen extends StatelessWidget {
             );
           },
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              "Chào buổi tối",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-            ),
-            Text("Trương Bá Cường",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          ],
+        title: Transform(
+          transform: Matrix4.translationValues(-16, 0.0, 0.0), // Chỉnh cho cái column gần với icon button hon
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                "Chào buổi tối",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+              Text("Trương Bá Cường",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ],
+          ),
         ),
         actions: <Widget>[
           IconButton(
