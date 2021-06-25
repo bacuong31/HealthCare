@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:health_care/MainScreen/profile.dart';
+
+import 'package:health_care/RegulationSreen/regulation_screen.dart';
+
 import 'package:health_care/constants.dart';
 import 'package:health_care/service/auth.dart';
 import 'package:health_care/sign_in/sign_in_screen.dart';
@@ -7,13 +11,11 @@ import 'DataSearch.dart';
 
 class HeathFunctionClassInfo {
   final String Name, ImageURL;
-
-
   HeathFunctionClassInfo(this.Name, this.ImageURL);
 }
 
 List demoList = [
-  HeathFunctionClassInfo("Kiểm tra nhịp tim", null),
+  HeathFunctionClassInfo("Kiểm tra nhịp tim", "assets/images/camera.png"),
   HeathFunctionClassInfo("Huyết áp", null),
   HeathFunctionClassInfo("Đường huyết", null),
   HeathFunctionClassInfo("Nồng độ cồn", null),
@@ -24,14 +26,14 @@ class MainScreen extends StatelessWidget {
   const MainScreen({Key key, @required this.auth}) : super(key: key);
   final AuthBase auth;
 
-  Future<void> _signOut() async{
-    try{
+  Future<void> _signOut() async {
+    try {
       await auth.signOut();
-
-    } catch(e){
+    } catch (e) {
       print(e.toString());
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,7 +77,7 @@ class MainScreen extends StatelessWidget {
               child: Text("Tìm kiếm thông tin về sức khỏe",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 18.0,
                   ))),
           Padding(
@@ -83,9 +85,9 @@ class MainScreen extends StatelessWidget {
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
                 primary: Colors.white,
-                backgroundColor: Colors.indigo,
+                backgroundColor: Colors.indigo[300],
                 minimumSize:
-                Size(MediaQuery.of(context).size.width * 0.8, 26.0),
+                    Size(MediaQuery.of(context).size.width * 0.8, 26.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.0),
                 ),
@@ -139,7 +141,7 @@ class MainScreen extends StatelessWidget {
               "Theo dõi thông tin sức khỏe",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Colors.black,
                   fontSize: 18),
             ),
           ),
@@ -162,26 +164,38 @@ class MainScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      margin: EdgeInsets.only(bottom: 5.0),
-                      height: 120.0,
-                      width: 200.0,
-                      decoration: BoxDecoration(
-                        image: null, //fix later
-                        color: Colors.black12,
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(10),
+                    MaterialButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RegulationScreen(
+                                screenName: demoList[index].Name),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        height: 120.0,
+                        width: 200.0,
+                        decoration: BoxDecoration(
+                          image: null,
+                          //fix later
+                          color: Colors.white,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10),
+                          ),
                         ),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 5.0),
+                      padding: const EdgeInsets.only(left: 5.0, top: 5.0),
                       child: Text(
                         demoList[index].Name,
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
-                            color: Colors.white),
+                            color: Colors.black),
                         textAlign: TextAlign.start,
                       ),
                     )

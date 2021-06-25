@@ -44,20 +44,27 @@ class LandingScreen extends StatelessWidget {
   }
 
   Future<void> _createUserIfNotExist(User user) async {
+
     DocumentSnapshot tempUserRecord = await ref.doc(user.uid).get();
     if (!tempUserRecord.exists) {
       await ref.doc(user.uid).set({
         'id': user.uid,
-        'name': "Chưa cập nhật",
-        'phoneNumber': "",
+        'name': "",
         'photoUrl': "",
-        'email': "Chưa cập nhật",
+        'sex': "",
         'birthday': "",
       });
     }
+
     DocumentSnapshot userRecord = await ref.doc(user.uid).get();
+
+    if (userRecord.data() != null) {
+      userRecord = await ref.doc(user.uid).get();
+
+    }
+
     currentUser = AppUser.fromDocument(userRecord);
-    
-    print('current User: ' + currentUser.name + ' ' + currentUser.id);
+
+
   }
 }

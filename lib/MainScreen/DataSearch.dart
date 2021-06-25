@@ -1,5 +1,25 @@
 import 'package:flutter/material.dart';
 
+var suggest = [
+  "covid 19",
+  "ho khan",
+  "nhiệt miệng",
+  "mất ngủ",
+  "trầm cảm",
+  "thoái hóa cột sống",
+  "bitcoin",
+  "cảm cúm",
+  "ho có đờm",
+  "huyết áp cao",
+];
+
+var recentSearch = [
+  "cảm cúm",
+  "ho có đờm",
+  "huyết áp cao",
+  "mất ngủ",
+];
+
 class DataSearch extends SearchDelegate<String> {
   DataSearch({
     String hintText,
@@ -11,25 +31,6 @@ class DataSearch extends SearchDelegate<String> {
           textInputAction: TextInputAction.search,
           searchFieldStyle: textStyle,
         );
-
-  final suggest = [
-    "covid 19",
-    "ho khan",
-    "nhiệt miệng",
-    "mất ngủ",
-    "trầm cảm",
-    "thoái hóa cột sống",
-    "bitcoin",
-    "cảm cúm",
-    "ho có đờm",
-    "huyết áp cao",
-  ];
-
-  final recentSearch = [
-    "cảm cúm",
-    "ho có đờm",
-    "huyết áp cao",
-  ];
 
   @override
   ThemeData appBarTheme(BuildContext context) {
@@ -90,27 +91,28 @@ class DataSearch extends SearchDelegate<String> {
       itemBuilder: (context, index) => ListTile(
         onTap: () {
           query = suggestionList[index];
-          bool temp = false; //todo: add recent search
-
+          bool temp = true; //todo: add recent search, checking
+          for (var n in recentSearch) {
+            if (query == n) temp = false;
+          }
+          if (temp) {
+            recentSearch.insert(0, query);
+            if (recentSearch.length >= 7) {
+              recentSearch.removeAt(7);
+            }
+          }
+          else {
+            recentSearch.remove(query);
+            recentSearch.insert(0, query);
+          }
           showResults(context);
           //TODO: Information for search result aka new screen
         },
         tileColor: Colors.white,
         leading: Icon(Icons.history),
-        title: RichText(
-          text: TextSpan(
-            text: suggestionList[index].substring(0, query.length),
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
-            children: [
-              TextSpan(
-                text: suggestionList[index].substring(query.length),
-                style: TextStyle(color: Colors.grey),
-              )
-            ],
-          ),
+        title: Text(
+          suggestionList[index],
+          style: TextStyle(color: Colors.grey),
         ),
       ),
       itemCount: suggestionList.length,

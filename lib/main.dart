@@ -12,6 +12,7 @@ import 'package:health_care/sign_in/sign_in_screen.dart';
 
 
 AppUser currentUser;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();

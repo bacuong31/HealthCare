@@ -3,21 +3,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class AppUser {
   final String id;
   final String name;
-  final String email;
   final String photoUrl;
-  final String phoneNumber;
-  final DateTime birthDay;
+  final String sex;
+  final String birthDay;
 
-  const AppUser({this.id, this.photoUrl, this.email, this.name, this.birthDay, this.phoneNumber});
+  const AppUser({this.id, this.photoUrl, this.name, this.birthDay, this.sex});
 
   factory AppUser.fromDocument(DocumentSnapshot document) {
     return AppUser(
-      email: document['email'],
-      photoUrl: document['photoUrl'],
-      id: document.id,
-      name: document['name'],
-      phoneNumber: document['phoneNumber'],
-      birthDay: document["birthDay"],
+      id: document.data()['id'],
+      name: document.data()['name'],
+      photoUrl: document.data()['photoUrl'],
+      sex: document.data()['sex'],
+      birthDay: document.data()["birthDay"],
     );
   }
 }
