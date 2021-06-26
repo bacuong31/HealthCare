@@ -1,21 +1,38 @@
 import 'dart:core';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:health_care/constants.dart';
 
+import '../main.dart';
+
 //TODO: timer push notification to measurement
 
 class ChiSoHuyetAp {
-  int tamThu;
-  int tamTruong;
-  DateTime ngayCapNhat;
+  final int tamThu;
+  final int tamTruong;
+  final DateTime ngayCapNhat;
+  final String id;
+  const ChiSoHuyetAp({this.tamThu, this.tamTruong, this.ngayCapNhat, this.id});
 
-  ChiSoHuyetAp(int _tamThu, int _tamTruong) {
-    this.tamThu = _tamThu;
-    this.tamTruong = _tamTruong;
-    this.ngayCapNhat = DateTime.now().toUtc();
+  factory ChiSoHuyetAp.fromDoucument(DocumentSnapshot document){
+    return ChiSoHuyetAp(
+      tamThu: document.data()['tamThu'],
+      tamTruong: document.data()['tamTruong'],
+      ngayCapNhat: document.data()['timestamp'].toDate(),
+      id: document.data()['id'],
+    );
+  }
+
+  factory ChiSoHuyetAp.fromMap(Map<String, dynamic> data){
+    return ChiSoHuyetAp(
+      tamThu: data['tamThu'],
+      tamTruong: data['tamTruong'],
+      ngayCapNhat: data['timestamp'].toDate(),
+      id: data['id'],
+    );
   }
 }
 
@@ -29,10 +46,16 @@ class RegulationScreen extends StatefulWidget {
 }
 
 class _RegulationScreenState extends State<RegulationScreen> {
-  List<ChiSoHuyetAp> listChiSoHuyetAp = new List.from([
-    new ChiSoHuyetAp(70, 40),
-    new ChiSoHuyetAp(71, 41),
-  ]);
+  List<ChiSoHuyetAp> listChiSoHuyetAp = [];
+
+
+  List<String> loiKhuyen = [
+    "Huyết áp của bạn đang ở mức thấp. Hãy bổ sung nước và đường cho cơ thể",
+    "Huyết áp của bạn đang ở mức lý tưởng. Hãy đo lại huyết áp sau 1 tháng",
+    "Huyết áp của bạn đang rất ổn định. Hãy đo lại huyết áp sau 1 tháng",
+    "Bạn đang có bệnh lý về huyết áp. Hãy liên hệ với bác sĩ để được tư vấn và điều trị",
+    "Nguy hiểm! Huyết áp của bạn đang rất cao. Hãy đến cơ sở y tế gần nhất để kiểm tra và điều trị"
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -99,10 +122,12 @@ class _RegulationScreenState extends State<RegulationScreen> {
                           duration: Duration(seconds: 2),
                         ));
                       } else {
-                        setState(() {
+                        /*setState(() {
                           listChiSoHuyetAp.add(new ChiSoHuyetAp(
                               int.parse(_newTamThu), int.parse(_newTamTruong)));
-                        });
+                        });*/
+                        postToFireStore(tamThu: int.parse(_newTamThu),
+                            tamTruong: int.parse(_newTamTruong));
                       }
                     },
                   ),
@@ -119,20 +144,33 @@ class _RegulationScreenState extends State<RegulationScreen> {
             transform: Matrix4.translationValues(-28, 0.0, 0.0),
             child: Center(child: Text(widget.screenName))),
       ),
-      body: ListView(
-        children: <Widget>[
-          Container(height: defaultPadding),
-          Center(
-            //TODO: Xử lý phân biệt màn hình
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(16.0)),
-              ),
-              child: listChiSoHuyetAp.length == 0
-                  ? Container(
+      body: StreamBuilder<List<ChiSoHuyetAp>>(
+          stream: _getChiSoHuyetAp(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                  child: Text("Có lỗi xảy ra! Vui lòng thử lại sau."));
+            } else if (snapshot.hasData) {
+              final chiSo = snapshot.data;
+              listChiSoHuyetAp = chiSo;
+            }
+            return ListView(
+              children: <Widget>[
+                Container(height: defaultPadding),
+                Center(
+                  //TODO: Xử lý phân biệt màn hình
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                    ),
+                    child: listChiSoHuyetAp.length == 0
+                        ? Container(
                       padding: EdgeInsets.all(10.0),
                       alignment: Alignment.center,
-                      width: MediaQuery.of(context).size.width * 0.85,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width * 0.85,
                       height: 80,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -150,9 +188,12 @@ class _RegulationScreenState extends State<RegulationScreen> {
                         ],
                       ),
                     )
-                  : Container(
+                        : Container(
                       alignment: Alignment.center,
-                      width: MediaQuery.of(context).size.width * 0.85,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width * 0.85,
                       height: 200,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -198,7 +239,8 @@ class _RegulationScreenState extends State<RegulationScreen> {
                           ),
 
                           MaterialButton(
-                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            materialTapTargetSize: MaterialTapTargetSize
+                                .shrinkWrap,
                             padding: EdgeInsets.zero,
                             onPressed: () {
                               showDialog(
@@ -212,9 +254,9 @@ class _RegulationScreenState extends State<RegulationScreen> {
                                       height: 150,
                                       child: Column(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.start,
+                                        MainAxisAlignment.start,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                         children: [
                                           SizedBox(height: 8.0),
                                           Text("Tâm thu"),
@@ -256,16 +298,16 @@ class _RegulationScreenState extends State<RegulationScreen> {
                                       ),
                                       TextButton(
                                         child:
-                                            Text('Lưu thay đổi'.toUpperCase()),
+                                        Text('Lưu thay đổi'.toUpperCase()),
                                         onPressed: () {
                                           Navigator.pop(context);
-                                          setState(() {
-                                            listChiSoHuyetAp.last.tamThu =
-                                                int.parse(_newTamThu);
-                                            listChiSoHuyetAp.last.tamTruong =
-                                                int.parse(_newTamTruong);
-                                            listChiSoHuyetAp.last.ngayCapNhat =
-                                                DateTime.now().toUtc();
+                                          FirebaseFirestore.instance
+                                              .collection('blood_pressure')
+                                              .doc(listChiSoHuyetAp.last.id)
+                                              .update({
+                                            "tamThu" : int.parse(_newTamThu),
+                                            "tamTruong" : int.parse(_newTamTruong),
+                                            "timestamp": DateTime.now(),
                                           });
                                         },
                                       ),
@@ -281,7 +323,7 @@ class _RegulationScreenState extends State<RegulationScreen> {
                                 color: Colors.grey,
                                 shape: BoxShape.rectangle,
                                 borderRadius:
-                                    const BorderRadius.all(Radius.circular(12)),
+                                const BorderRadius.all(Radius.circular(12)),
                               ),
                               child: Center(
                                 child: Text(
@@ -294,36 +336,88 @@ class _RegulationScreenState extends State<RegulationScreen> {
                         ],
                       ),
                     ),
-            ),
-          ),
-          SizedBox(height: defaultPadding),
-          Center(
-            child: buildLoiKhuyen(context, listChiSoHuyetAp.last.tamThu,
-                listChiSoHuyetAp.last.tamTruong),
-          ),
-          SizedBox(height: defaultPadding),
-          Center(
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.85,
-              child: Text(
-                "Lịch sử đo",
-                style: TextStyle(color: Colors.red, fontSize: 20.0),
-              ),
-            ),
-          ),//TODO: nhờ Cường chụp phần dưới của huyết áp
-          //TODO; Lịch sử
-          SizedBox(height: defaultPadding),
+                  ),
+                ),
+                SizedBox(height: defaultPadding),
+                Center(
+                  child: buildLoiKhuyen(context, listChiSoHuyetAp.last.tamThu,
+                      listChiSoHuyetAp.last.tamTruong),
+                ),
+                SizedBox(height: defaultPadding),
+                Center(
+                  child: Container(
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width * 0.85,
+                    child: Text(
+                      "Lịch sử đo",
+                      style: TextStyle(color: Colors.red, fontSize: 20.0),
+                    ),
+                  ),
+                ), //TODO: nhờ Cường chụp phần dưới của huyết áp
+                //TODO; Lịch sử
+                SizedBox(height: defaultPadding),
 
-        ],
+              ],
+            );
+          }
       ),
     );
   }
 
   Container buildLoiKhuyen(BuildContext context, int _tamThu, int _tamTruong) {
     //TODO: lấy dữ liệu bên Cường, máy t bị nâng cấp phiên bản nên mất chức năng huyết áp
+    Color selectionColor = null;
+
+    String suggestion = null;
+    if (_tamThu < 90) {
+      if (_tamTruong < 60) {
+        suggestion = loiKhuyen[0];
+        selectionColor = warningState;
+      } else if (_tamTruong >= 60 && _tamTruong <= 84) {
+        suggestion = loiKhuyen[1];
+        selectionColor = normalState;
+      } else {
+        suggestion = loiKhuyen[3];
+        selectionColor = warningState;
+      }
+    }
+    else if (_tamThu >= 90 && _tamThu <= 110) {
+      if (_tamTruong < 60) {
+        suggestion = loiKhuyen[0];
+        selectionColor = warningState;
+      } else if (_tamTruong >= 60 && _tamTruong <= 84) {
+        suggestion = loiKhuyen[1];
+        selectionColor = normalState;
+      } else {
+        suggestion = loiKhuyen[3];
+        selectionColor = warningState;
+      }
+    } else if (_tamThu > 110 && _tamThu <= 130) {
+      if (_tamTruong < 60) {
+        suggestion = loiKhuyen[0];
+        selectionColor = warningState;
+      } else if (_tamTruong >= 60 && _tamTruong <= 84) {
+        suggestion = loiKhuyen[2];
+        selectionColor = normalState;
+      } else if (_tamTruong > 84 && _tamTruong <= 90) {
+        suggestion = loiKhuyen[3];
+        selectionColor = warningState;
+      } else {
+        suggestion = loiKhuyen[4];
+        selectionColor = dangerousState;
+      }
+    } else if (_tamThu > 130 && _tamThu <= 139) {
+      suggestion = loiKhuyen[3];
+      selectionColor = warningState;
+    } else if (_tamThu > 139) {
+      suggestion = loiKhuyen[4];
+      selectionColor = dangerousState;
+    }
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: selectionColor,
         //TODO: tham số color dựa trên lời khuyên? Ví dụ: đỏ = nghiêm trọng, xanh = tốt, vàng = cần chú ý
         borderRadius: const BorderRadius.all(
           Radius.circular(16.0),
@@ -331,14 +425,19 @@ class _RegulationScreenState extends State<RegulationScreen> {
       ),
       padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       alignment: Alignment.center,
-      width: MediaQuery.of(context).size.width * 0.85,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width * 0.85,
       child: Column(
         children: [
           Text(
-            "Lời khuyên từ Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            suggestion,
             //TODO: lấy lời khuyên dựa trên 2 chỉ số
             style: TextStyle(
-              color: Colors.black,
+
+              color: Colors.white,
+
               fontSize: 20.0,
             ),
           ),
@@ -381,4 +480,26 @@ class _RegulationScreenState extends State<RegulationScreen> {
       ],
     );
   }
+
+  void postToFireStore({int tamThu, int tamTruong}) async {
+    var reference = FirebaseFirestore.instance.collection('blood_pressure');
+    reference.add({
+      "tamThu": tamThu,
+      "tamTruong": tamTruong,
+      "ownerId": currentUser.id,
+      "timestamp": DateTime.now(),
+    }).then((DocumentReference doc) {
+      String docId = doc.id;
+      reference.doc(docId).update({"id": docId});
+    });
+  }
+
+  Stream<List<ChiSoHuyetAp>> _getChiSoHuyetAp() {
+    final snapshots = FirebaseFirestore.instance.collection('blood_pressure').orderBy('timestamp').snapshots();
+    return snapshots.map((snapshot) => snapshot.docs.map(
+        (snapshot) => ChiSoHuyetAp.fromMap(snapshot.data()),
+    ).toList());
+  }
+
+
 }
