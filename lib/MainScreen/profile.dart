@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:health_care/model/AppUser.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -18,8 +19,9 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController birthDayController = TextEditingController();
+  final TextEditingController nameController = TextEditingController(text: currentUser.name);
+  final TextEditingController birthDayController = TextEditingController(text: currentUser.birthday);
+
   List<bool> _isSelected = [false, false];
   String _sexual;
   String _nameLabel;
@@ -35,6 +37,17 @@ class _ProfileState extends State<Profile> {
     super.initState();
     nameController.addListener(_nameStartedTyping);
     birthDayController.addListener(_birthDayStartedTyping);
+    if (currentUser.sex == "Nam") {
+      _isSelected[0] = true;
+      _isSelected[1] = false;
+      femaleSelected = false;
+      _sexual = "Nam";
+    } else if (currentUser.sex == "Nữ") {
+      _isSelected[0] = false;
+      _isSelected[1] = true;
+      femaleSelected = true;
+      _sexual = "Nữ";
+    }
   }
 
   void _nameStartedTyping() {
@@ -59,67 +72,71 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: FirebaseFirestore.instance
-            .collection('users')
-            .doc(currentUser.id)
-            .get(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData)
-            return Container(
-                alignment: FractionalOffset.center,
-                child: CircularProgressIndicator());
-          AppUser user = AppUser.fromDocument(snapshot.data);
-          nameController.text = user.name;
-          birthDayController.text = user.birthDay;
-          if (user.sex == "Nam") {
-            _isSelected[0] = true;
-            _isSelected[1] = false;
-          } else if (user.sex == "Nữ") {
-            _isSelected[0] = false;
-            _isSelected[1] = true;
-          }
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Thông tin người dùng'),
-              leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+    /*FutureBuilder(
+          future: FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser.id)
+              .get(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Container(
+                  alignment: FractionalOffset.center,
+                  child: CircularProgressIndicator());
+            }
+            AppUser user = AppUser.fromDocument(snapshot.data);
+            currentUser = user;*/
+    /*           nameController.text = user.name;
+            birthDayController.text = user.birthday;
+
+            if (user.sex == "Nam") {
+              _isSelected[0] = true;
+              _isSelected[1] = false;
+              femaleSelected = false;
+            } else if (user.sex == "Nữ") {
+              _isSelected[0] = false;
+              _isSelected[1] = true;
+              femaleSelected = true;
+            }*/
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Thông tin người dùng'),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.check),
+              onPressed: () {
+                applyChanges().then(Navigator.maybePop(context));
+              })
+        ],
+      ),
+      body: Container(
+        padding: EdgeInsets.only(left: 15, top: 20, right: 15),
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: ListView(
+            children: [
+              Center(
+                child: ProfileImage(context),
               ),
-              actions: [
-                IconButton(
-                    icon: Icon(Icons.check),
-                    onPressed: () {
-                      applyChanges().then(Navigator.maybePop(context));
-                    })
-              ],
-            ),
-            body: Container(
-              padding: EdgeInsets.only(left: 15, top: 20, right: 15),
-              child: GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                },
-                child: ListView(
-                  children: [
-                    Center(
-                      child: ProfileImage(context),
-                    ),
-                    SizedBox(height: 30),
-                    buildTextField("Họ tên", nameController),
-                    buildTextBirthDay(context),
-                    buildSexual(),
-                  ],
-                ),
-              ),
-            ),
-          );
-        });
+              SizedBox(height: 30),
+              buildTextField("Họ tên", nameController),
+              buildTextBirthDay(),
+              buildSexual(),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget buildSexual() {
@@ -220,7 +237,7 @@ class _ProfileState extends State<Profile> {
                   : CircleAvatar(
                       backgroundImage:
                           AssetImage('assets/images/profile_default.png'),
-                          radius: 50.0,
+                      radius: 50.0,
                     )),
           Positioned(
               right: -9,
@@ -241,7 +258,7 @@ class _ProfileState extends State<Profile> {
         ]));
   }
 
-  TextFormField buildTextBirthDay(BuildContext context) {
+  Widget buildTextBirthDay() {
     return TextFormField(
       focusNode: new AlwaysDisabledFocusNode(),
       controller: birthDayController,
@@ -431,12 +448,13 @@ class _ProfileState extends State<Profile> {
 
   applyChanges() async {
     //print("[current photo url] " + currentUserModel.photoUrl);
-    if (currentUser.photoUrl != "") {
-      Reference ref = FirebaseStorage.instance.refFromURL(currentUser.photoUrl);
-      ref.delete();
-    }
+
     //print("[Ten] " + nameController.text);
     if (file != null) {
+      if (currentUser.photoUrl != "") {
+        Reference ref = FirebaseStorage.instance.refFromURL(currentUser.photoUrl);
+        ref.delete();
+      }
       uploadImage(file).then((data) => FirebaseFirestore.instance
               .collection('users')
               .doc(currentUser.id)
@@ -455,7 +473,7 @@ class _ProfileState extends State<Profile> {
         "name": nameController.text,
         "birthday": birthDayController.text,
         "sex": _sexual
-      });
+      }).whenComplete(() async => {reloadCurrentModelUserData()});
     }
   }
 }
