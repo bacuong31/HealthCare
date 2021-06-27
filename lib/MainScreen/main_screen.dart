@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:health_care/MainScreen/profile.dart';
 
-import 'package:health_care/RegulationSreen/regulation_screen.dart';
+import 'package:health_care/RegulationSreen/blood_pressure_screen.dart';
+import 'package:health_care/RegulationSreen/water_screen.dart';
 
 import 'package:health_care/constants.dart';
 import 'package:health_care/service/auth.dart';
@@ -11,6 +12,7 @@ import 'DataSearch.dart';
 
 class HeathFunctionClassInfo {
   final String Name, ImageURL;
+
   HeathFunctionClassInfo(this.Name, this.ImageURL);
 }
 
@@ -33,34 +35,33 @@ class MainScreen extends StatelessWidget {
       print(e.toString());
     }
   }
-
+  //TODO: sửa tên người dùng + thời gian
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leadingWidth: 38.0,
         leading: IconButton(
-          padding: EdgeInsets.zero,
+          padding: EdgeInsets.only(left: 8.0),
           icon: Icon(Icons.account_circle_rounded),
           iconSize: 40,
           onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => Profile()),
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Profile()),
             );
           },
         ),
-        title: Transform(
-          transform: Matrix4.translationValues(-16, 0.0, 0.0), // Chỉnh cho cái column gần với icon button hon
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "Chào buổi tối",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-              ),
-              Text("Trương Bá Cường",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            ],
-          ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              "Chào buổi tối",
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            ),
+            Text("Trương Bá Cường",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          ],
         ),
         actions: <Widget>[
           IconButton(
@@ -173,9 +174,7 @@ class MainScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => RegulationScreen(
-                              screenName: demoList[index].Name,
-                            ),
+                            builder: (context) => WaterConsumptionScreen(),
                           ),
                         );
                       },
