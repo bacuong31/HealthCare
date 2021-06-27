@@ -555,7 +555,7 @@ class _RegulationScreenState extends State<RegulationScreen> {
             suggestion,
             style: TextStyle(
               color: Colors.white,
-              fontSize: 18.0,
+              fontSize: 19.0,
             ),
           ),
         ],
