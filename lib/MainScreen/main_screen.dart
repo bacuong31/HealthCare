@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:health_care/MainScreen/profile.dart';
 
-import 'package:health_care/RegulationSreen/regulation_screen.dart';
+import 'package:health_care/RegulationSreen/blood_pressure_screen.dart';
+import 'package:health_care/RegulationSreen/water_screen.dart';
 
 import 'package:health_care/constants.dart';
 import 'package:health_care/service/auth.dart';
@@ -173,9 +174,7 @@ class MainScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => RegulationScreen(
-                              screenName: demoList[index].Name,
-                            ),
+                            builder: (context) => WaterConsumptionScreen(),
                           ),
                         );
                       },
