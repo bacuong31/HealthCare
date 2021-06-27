@@ -368,6 +368,11 @@ class _RegulationScreenState extends State<RegulationScreen> {
 
   Container buildLoiKhuyen(BuildContext context, int _tamThu, int _tamTruong) {
     //TODO: lấy dữ liệu bên Cường, máy t bị nâng cấp phiên bản nên mất chức năng huyết áp
+    if(listChiSoHuyetAp.length == 0){
+      return Container(
+          alignment: FractionalOffset.center,
+          child: CircularProgressIndicator());
+    }
     Color selectionColor = null;
 
     String suggestion = null;
@@ -492,10 +497,12 @@ class _RegulationScreenState extends State<RegulationScreen> {
       String docId = doc.id;
       reference.doc(docId).update({"id": docId});
     });
-  }
+  } 
 
   Stream<List<ChiSoHuyetAp>> _getChiSoHuyetAp() {
-    final snapshots = FirebaseFirestore.instance.collection('blood_pressure').orderBy('timestamp').snapshots();
+    final snapshots = FirebaseFirestore.instance.collection('blood_pressure')
+        .where('ownerId', isEqualTo: currentUser.id)
+        .orderBy('timestamp').snapshots();
     return snapshots.map((snapshot) => snapshot.docs.map(
         (snapshot) => ChiSoHuyetAp.fromMap(snapshot.data()),
     ).toList());
