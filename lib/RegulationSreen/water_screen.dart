@@ -11,7 +11,7 @@ import '../main.dart';
 //TODO: timer push notification to measurement
 
 class ChiSoNuoc {
-  final double luongNuoc;
+  final int luongNuoc;
   final int canNang;
   final DateTime ngayCapNhat;
   final String id;
@@ -110,7 +110,7 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                       } else {
                         postToFireStore(
                           canNang: int.parse(_newCanNang),
-                          luongNuoc: int.parse(_newCanNang) / 10,
+                          luongNuoc: int.parse(_newCanNang) * 31,
                         );
                       }
                     },
@@ -130,8 +130,12 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
       ),
       body: StreamBuilder<List<ChiSoNuoc>>(
           stream: _getChiSoNuoc(),
+
+          initialData: null,
+
           builder: (context, snapshot) {
             if (snapshot.hasError) {
+              print(snapshot);
               return Center(
                   child: Text("Có lỗi xảy ra! Vui lòng thử lại sau."));
             } else if (snapshot.hasData) {
@@ -183,12 +187,12 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                   children: [
                                     buildChiSo(
                                       "Cân nặng",
-                                      listChiSoNuoc.last.luongNuoc.toString(),
+                                      listChiSoNuoc.last.canNang.toString(),
                                       "kg",
                                     ),
                                     buildChiSo(
                                       "Nhu cầu nước",
-                                      listChiSoNuoc.last.canNang.toString(),
+                                      listChiSoNuoc.last.luongNuoc.toString(),
                                       "lít",
                                     ),
                                   ],
@@ -275,8 +279,8 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                                   "canNang":
                                                       int.parse(_newCanNang),
                                                   "luongNuoc":
-                                                      int.parse(_newCanNang) /
-                                                          10,
+                                                      int.parse(_newCanNang) *
+                                                          31,
                                                   "timestamp": DateTime.now(),
                                                 });
                                               },
@@ -522,7 +526,7 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
     );
   }
 
-  void postToFireStore({int canNang, double luongNuoc}) async {
+  void postToFireStore({int canNang, int luongNuoc}) async {
     var reference = FirebaseFirestore.instance.collection('water');
     reference.add({
       "canNang": canNang,
