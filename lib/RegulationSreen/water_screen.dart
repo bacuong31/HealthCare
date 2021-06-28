@@ -8,8 +8,6 @@ import 'package:health_care/constants.dart';
 
 import '../main.dart';
 
-//TODO: timer push notification to measurement
-
 class ChiSoNuoc {
   final int luongNuoc;
   final int canNang;
@@ -47,13 +45,8 @@ class WaterConsumptionScreen extends StatefulWidget {
 class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
   List<ChiSoNuoc> listChiSoNuoc = [];
 
-  //TODO: Lời khuyên cho nước
   List<String> loiKhuyen = [
-    "Huyết áp của bạn đang ở mức thấp. Hãy bổ sung nước và đường cho cơ thể",
-    "Huyết áp của bạn đang ở mức lý tưởng. Hãy đo lại huyết áp sau 1 tháng",
-    "Huyết áp của bạn đang rất ổn định. Hãy đo lại huyết áp sau 1 tháng",
-    "Bạn đang có bệnh lý về huyết áp. Hãy liên hệ với bác sĩ để được tư vấn và điều trị",
-    "Nguy hiểm! Huyết áp của bạn đang rất cao. Hãy đến cơ sở y tế gần nhất để kiểm tra và điều trị"
+    "Huyết áp của bạn đang ở mức thấp. Hãy bổ sung nước và đường cho cơ thể"
   ];
 
   @override
@@ -130,9 +123,6 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
       ),
       body: StreamBuilder<List<ChiSoNuoc>>(
           stream: _getChiSoNuoc(),
-
-          initialData: null,
-
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               print(snapshot);
@@ -146,7 +136,6 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
               children: <Widget>[
                 Container(height: defaultPadding),
                 Center(
-                  //TODO: Xử lý phân biệt màn hình
                   child: Card(
                     elevation: 3.5,
                     shape: RoundedRectangleBorder(
@@ -193,11 +182,10 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                     buildChiSo(
                                       "Nhu cầu nước",
                                       listChiSoNuoc.last.luongNuoc.toString(),
-                                      "lít",
+                                      "ml",
                                     ),
                                   ],
                                 ),
-                                //TODO: Thông tin Text này dựa trên màn hình
                                 RichText(
                                   text: TextSpan(
                                     children: <TextSpan>[
@@ -221,7 +209,6 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                     ],
                                   ),
                                 ),
-
                                 MaterialButton(
                                   materialTapTargetSize:
                                       MaterialTapTargetSize.shrinkWrap,
@@ -279,8 +266,8 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                                   "canNang":
                                                       int.parse(_newCanNang),
                                                   "luongNuoc":
-                                                      int.parse(_newCanNang) *
-                                                          31,
+                                                      int.parse(_newCanNang) /
+                                                          10,
                                                   "timestamp": DateTime.now(),
                                                 });
                                               },
@@ -347,16 +334,43 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                   fontWeight: FontWeight.bold, fontSize: 15.0),
                             ),
                             Text(
+                              "Nhu cầu nước",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 15.0),
+                            ),
+                            Text(
                               "Ngày cập nhật",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 15.0),
                             ),
                           ],
                         ),
-                        Text(
-                          "(kg)",
-                          style: TextStyle(
-                              fontWeight: FontWeight.normal, fontSize: 13.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "(kg)",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 13.0),
+                            ),
+                            Transform(
+                              transform:
+                                  Matrix4.translationValues(-28, 0.0, 0.0),
+                              child: Text(
+                                "(ml)",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 13.0),
+                              ),
+                            ),
+                            Text(
+                              "",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 13.0),
+                            ),
+                          ],
                         ),
                         listChiSoNuoc.length == 0
                             ? Container(
@@ -378,6 +392,11 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                   children: [
                                     Text("--------",
                                         style: TextStyle(fontSize: 20)),
+                                    Transform(
+                                      transform: Matrix4.translationValues(-20.0, 0, 0),
+                                      child: Text("--------",
+                                          style: TextStyle(fontSize: 20)),
+                                    ),
                                     Text("--------",
                                         style: TextStyle(fontSize: 20)),
                                   ],
@@ -409,19 +428,20 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                       children: listChiSoNuoc.length >= 3
                                           ? [
                                               Text(
-                                                listChiSoNuoc[listChiSoNuoc
-                                                                .length -
+                                                listChiSoNuoc[
+                                                        listChiSoNuoc.length -
                                                             3 +
                                                             index]
-                                                        .luongNuoc
-                                                        .toString() +
-                                                    "/" +
-                                                    listChiSoNuoc[listChiSoNuoc
-                                                                .length -
+                                                    .canNang
+                                                    .toString(),
+                                              ),
+                                              Text(
+                                                listChiSoNuoc[
+                                                        listChiSoNuoc.length -
                                                             3 +
                                                             index]
-                                                        .canNang
-                                                        .toString(),
+                                                    .luongNuoc
+                                                    .toString(),
                                               ),
                                               Text(listChiSoNuoc[
                                                       listChiSoNuoc.length -
@@ -435,12 +455,16 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                           : [
                                               Text(
                                                 listChiSoNuoc[index]
-                                                        .luongNuoc
-                                                        .toString() +
-                                                    "/" +
-                                                    listChiSoNuoc[index]
-                                                        .canNang
-                                                        .toString(),
+                                                    .canNang
+                                                    .toString(),
+                                              ),
+                                              Transform(
+                                                transform: Matrix4.translationValues(12, 0.0, 0.0),
+                                                child: Text(
+                                                  listChiSoNuoc[index]
+                                                      .luongNuoc
+                                                      .toString(),
+                                                ),
                                               ),
                                               Text(listChiSoNuoc[index]
                                                   .ngayCapNhat
@@ -451,7 +475,7 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                     ),
                                   );
                                 },
-                              ) //TODO: change to StreamBuilder later ?
+                              )
                       ],
                     ),
                   ),
@@ -464,8 +488,9 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
   }
 
   Container buildLoiKhuyen(BuildContext context, int _canNang) {
-    Color selectionColor = null;
-    String suggestion = "Yuul B.Alwright";
+    Color selectionColor = Colors.green[200];
+    String soLy = (_canNang/11).round().toString();
+    String suggestion = "Mỗi ngày bạn nên uống khoảng $soLy cốc nước đầy để cơ thể khỏe mạnh";
 
     return Container(
       decoration: BoxDecoration(
@@ -482,7 +507,7 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
           Text(
             suggestion,
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontSize: 19.0,
             ),
           ),
