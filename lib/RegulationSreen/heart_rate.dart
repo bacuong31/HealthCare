@@ -8,54 +8,41 @@ import 'package:health_care/constants.dart';
 
 import '../main.dart';
 
-//TODO: timer push notification to measurement
-
-class ChiSoHuyetAp {
-  final int tamThu;
-  final int tamTruong;
+class ChiSoNhipTim {
+  final int nhipTim;
   final DateTime ngayCapNhat;
   final String id;
 
-  const ChiSoHuyetAp({this.tamThu, this.tamTruong, this.ngayCapNhat, this.id});
+  const ChiSoNhipTim({this.nhipTim, this.ngayCapNhat, this.id});
 
-  factory ChiSoHuyetAp.fromDocument(DocumentSnapshot document) {
-    return ChiSoHuyetAp(
-      tamThu: document.data()['tamThu'],
-      tamTruong: document.data()['tamTruong'],
+  factory ChiSoNhipTim.fromDocument(DocumentSnapshot document) {
+    return ChiSoNhipTim(
+      nhipTim: document.data()['nhipTim'],
       ngayCapNhat: document.data()['timestamp'].toDate(),
       id: document.data()['id'],
     );
   }
 
-  factory ChiSoHuyetAp.fromMap(Map<String, dynamic> data) {
-    return ChiSoHuyetAp(
-      tamThu: data['tamThu'],
-      tamTruong: data['tamTruong'],
+  factory ChiSoNhipTim.fromMap(Map<String, dynamic> data) {
+    return ChiSoNhipTim(
+      nhipTim: data['nhipTim'],
       ngayCapNhat: data['timestamp'].toDate(),
       id: data['id'],
     );
   }
 }
 
-class BloodPressureScreen extends StatefulWidget {
-
-
-  const BloodPressureScreen({Key key}) : super(key: key);
+class HeartRateScreen extends StatefulWidget {
+  const HeartRateScreen({Key key}) : super(key: key);
 
   @override
-  _BloodPressureScreenState createState() => _BloodPressureScreenState();
+  _HeartRateScreenState createState() => _HeartRateScreenState();
 }
 
-class _BloodPressureScreenState extends State<BloodPressureScreen> {
-  List<ChiSoHuyetAp> listChiSoHuyetAp = [];
+class _HeartRateScreenState extends State<HeartRateScreen> {
+  List<ChiSoNhipTim> listChiSoNhipTim = [];
 
-  List<String> loiKhuyen = [
-    "Huyết áp của bạn đang ở mức thấp. Hãy bổ sung nước và đường cho cơ thể",
-    "Huyết áp của bạn đang ở mức lý tưởng. Hãy đo lại huyết áp sau 1 tháng",
-    "Huyết áp của bạn đang rất ổn định. Hãy đo lại huyết áp sau 1 tháng",
-    "Bạn đang có bệnh lý về huyết áp. Hãy liên hệ với bác sĩ để được tư vấn và điều trị",
-    "Nguy hiểm! Huyết áp của bạn đang rất cao. Hãy đến cơ sở y tế gần nhất để kiểm tra và điều trị"
-  ];
+  List<String> loiKhuyen = [];
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +52,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
           showDialog(
             context: context,
             builder: (context) {
-              String _newTamThu = '';
-              String _newTamTruong = '';
+              String _newNhipTim = '';
               return AlertDialog(
                 title: Text('Thêm chỉ số'),
                 content: Container(
@@ -76,7 +62,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 8.0),
-                      Text("Tâm thu"),
+                      Text("Nhịp tim"),
                       TextField(
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[
@@ -84,19 +70,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                         ],
                         autofocus: true,
                         onChanged: (value) {
-                          _newTamThu = value;
-                        },
-                      ),
-                      SizedBox(height: 8.0),
-                      Text("Tâm trương"),
-                      TextField(
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        autofocus: true,
-                        onChanged: (value) {
-                          _newTamTruong = value;
+                          _newNhipTim = value;
                         },
                       ),
                     ],
@@ -113,18 +87,18 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                     child: Text('Thêm chỉ số'.toUpperCase()),
                     onPressed: () {
                       Navigator.pop(context);
-                      if (_newTamTruong == "" || _newTamThu == "") {
+                      if (_newNhipTim == "") {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text(
-                            "Thất bại, bạn cần nhập đủ hai chỉ số",
+                            "Thất bại, bạn cần nhập chỉ số nhịp tim",
                             style: TextStyle(fontSize: 16.0),
                           ),
                           duration: Duration(seconds: 2),
                         ));
                       } else {
                         postToFireStore(
-                            tamThu: int.parse(_newTamThu),
-                            tamTruong: int.parse(_newTamTruong));
+                          nhipTim: int.parse(_newNhipTim),
+                        );
                       }
                     },
                   ),
@@ -139,29 +113,29 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
       appBar: AppBar(
         title: Transform(
             transform: Matrix4.translationValues(-28, 0.0, 0.0),
-            child: Center(child: Text("Huyết áp"))),
+            child: Center(child: Text("Nhịp tim"))),
       ),
-      body: StreamBuilder<List<ChiSoHuyetAp>>(
-          stream: _getChiSoHuyetAp(),
+      body: StreamBuilder<List<ChiSoNhipTim>>(
+          stream: _getChiSoNhipTim(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
+              print(snapshot);
               return Center(
                   child: Text("Có lỗi xảy ra! Vui lòng thử lại sau."));
             } else if (snapshot.hasData) {
               final chiSo = snapshot.data;
-              listChiSoHuyetAp = chiSo;
+              listChiSoNhipTim = chiSo;
             }
             return ListView(
               children: <Widget>[
                 Container(height: defaultPadding),
                 Center(
-                  //TODO: Xử lý phân biệt màn hình
                   child: Card(
                     elevation: 3.5,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(16.0)),
                     ),
-                    child: listChiSoHuyetAp.length == 0
+                    child: listChiSoNhipTim.length == 0
                         ? Container(
                             padding: EdgeInsets.all(10.0),
                             alignment: Alignment.center,
@@ -171,15 +145,11 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 buildChiSo(
-                                  "Tâm thu",
+                                  "Nhịp tim",
                                   "--",
                                   "",
                                 ),
-                                buildChiSo(
-                                  "Tâm trương",
-                                  "--",
-                                  "",
-                                ),
+
                               ],
                             ),
                           )
@@ -195,19 +165,12 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     buildChiSo(
-                                      "Tâm thu",
-                                      listChiSoHuyetAp.last.tamThu.toString(),
-                                      "mmHg",
-                                    ),
-                                    buildChiSo(
-                                      "Tâm trương",
-                                      listChiSoHuyetAp.last.tamTruong
-                                          .toString(),
-                                      "mmHg",
+                                      "Nhịp tim",
+                                      listChiSoNhipTim.last.nhipTim.toString(),
+                                      "BPM",
                                     ),
                                   ],
                                 ),
-                                //TODO: Thông tin Text này dựa trên màn hình
                                 RichText(
                                   text: TextSpan(
                                     children: <TextSpan>[
@@ -219,7 +182,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                                         ),
                                       ),
                                       TextSpan(
-                                        text: listChiSoHuyetAp.last.ngayCapNhat
+                                        text: listChiSoNhipTim.last.ngayCapNhat
                                             .toString()
                                             .substring(0, 10),
                                         // Chỉ lấy đến ngày
@@ -231,7 +194,6 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                                     ],
                                   ),
                                 ),
-
                                 MaterialButton(
                                   materialTapTargetSize:
                                       MaterialTapTargetSize.shrinkWrap,
@@ -240,8 +202,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                                     showDialog(
                                       context: context,
                                       builder: (context) {
-                                        String _newTamThu = '';
-                                        String _newTamTruong = '';
+                                        String _newCanNang = '';
                                         return AlertDialog(
                                           title: Text('Thay đổi chỉ số'),
                                           content: Container(
@@ -253,7 +214,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 SizedBox(height: 8.0),
-                                                Text("Tâm thu"),
+                                                Text("Nhịp tim"),
                                                 TextField(
                                                   keyboardType:
                                                       TextInputType.number,
@@ -264,24 +225,10 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                                                   ],
                                                   autofocus: true,
                                                   onChanged: (value) {
-                                                    _newTamThu = value;
+                                                    _newCanNang = value;
                                                   },
                                                 ),
                                                 SizedBox(height: 8.0),
-                                                Text("Tâm trương"),
-                                                TextField(
-                                                  keyboardType:
-                                                      TextInputType.number,
-                                                  inputFormatters: <
-                                                      TextInputFormatter>[
-                                                    FilteringTextInputFormatter
-                                                        .digitsOnly
-                                                  ],
-                                                  autofocus: true,
-                                                  onChanged: (value) {
-                                                    _newTamTruong = value;
-                                                  },
-                                                ),
                                               ],
                                             ),
                                           ),
@@ -298,15 +245,15 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                                               onPressed: () {
                                                 Navigator.pop(context);
                                                 FirebaseFirestore.instance
-                                                    .collection(
-                                                        'blood_pressure')
-                                                    .doc(listChiSoHuyetAp
+                                                    .collection('water')
+                                                    .doc(listChiSoNhipTim
                                                         .last.id)
                                                     .update({
-                                                  "tamThu":
-                                                      int.parse(_newTamThu),
-                                                  "tamTruong":
-                                                      int.parse(_newTamTruong),
+                                                  "canNang":
+                                                      int.parse(_newCanNang),
+                                                  "luongNuoc":
+                                                      int.parse(_newCanNang) /
+                                                          10,
                                                   "timestamp": DateTime.now(),
                                                 });
                                               },
@@ -345,10 +292,9 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                 ),
                 SizedBox(height: defaultPadding),
                 Center(
-                  child: listChiSoHuyetAp.length == 0
+                  child: listChiSoNhipTim.length == 0
                       ? Container()
-                      : buildLoiKhuyen(context, listChiSoHuyetAp.last.tamThu,
-                          listChiSoHuyetAp.last.tamTruong),
+                      : buildLoiKhuyen(context, listChiSoNhipTim.last.nhipTim),
                 ),
                 SizedBox(height: defaultPadding),
                 Center(
@@ -369,10 +315,11 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              "Tâm thu/Tâm trương",
+                              "Nhịp tim",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 15.0),
                             ),
+
                             Text(
                               "Ngày cập nhật",
                               style: TextStyle(
@@ -380,12 +327,34 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                             ),
                           ],
                         ),
-                        Text(
-                          "(mmHg)",
-                          style: TextStyle(
-                              fontWeight: FontWeight.normal, fontSize: 13.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "(BPM)",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 13.0),
+                            ),
+                            Transform(
+                              transform:
+                                  Matrix4.translationValues(-28, 0.0, 0.0),
+                              child: Text(
+                                "",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 13.0),
+                              ),
+                            ),
+                            Text(
+                              "",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 13.0),
+                            ),
+                          ],
                         ),
-                        listChiSoHuyetAp.length == 0
+                        listChiSoNhipTim.length == 0
                             ? Container(
                                 height: 50,
                                 padding: EdgeInsets.symmetric(
@@ -413,9 +382,9 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                             : ListView.builder(
                                 physics: NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
-                                itemCount: listChiSoHuyetAp.length > 3
+                                itemCount: listChiSoNhipTim.length > 3
                                     ? 3
-                                    : listChiSoHuyetAp.length,
+                                    : listChiSoNhipTim.length,
                                 itemBuilder: (context, index) {
                                   return Container(
                                     height: 50,
@@ -433,27 +402,19 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
-                                      children: listChiSoHuyetAp.length >= 3
+                                      children: listChiSoNhipTim.length >= 3
                                           ? [
                                               Text(
-                                                listChiSoHuyetAp[
-                                                            listChiSoHuyetAp
-                                                                    .length -
-                                                                3 +
-                                                                index]
-                                                        .tamThu
-                                                        .toString() +
-                                                    "/" +
-                                                    listChiSoHuyetAp[
-                                                            listChiSoHuyetAp
-                                                                    .length -
-                                                                3 +
-                                                                index]
-                                                        .tamTruong
-                                                        .toString(),
+                                                listChiSoNhipTim[
+                                                        listChiSoNhipTim
+                                                                .length -
+                                                            3 +
+                                                            index]
+                                                    .nhipTim
+                                                    .toString(),
                                               ),
-                                              Text(listChiSoHuyetAp[
-                                                      listChiSoHuyetAp.length -
+                                              Text(listChiSoNhipTim[
+                                                      listChiSoNhipTim.length -
                                                           3 +
                                                           index]
                                                   .ngayCapNhat
@@ -463,15 +424,11 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                                             ]
                                           : [
                                               Text(
-                                                listChiSoHuyetAp[index]
-                                                        .tamThu
-                                                        .toString() +
-                                                    "/" +
-                                                    listChiSoHuyetAp[index]
-                                                        .tamTruong
-                                                        .toString(),
+                                                listChiSoNhipTim[index]
+                                                    .nhipTim
+                                                    .toString(),
                                               ),
-                                              Text(listChiSoHuyetAp[index]
+                                              Text(listChiSoNhipTim[index]
                                                   .ngayCapNhat
                                                   .toUtc()
                                                   .toString()
@@ -480,7 +437,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                                     ),
                                   );
                                 },
-                              ) //TODO: change to StreamBuilder later ?
+                              )
                       ],
                     ),
                   ),
@@ -492,53 +449,10 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
     );
   }
 
-  Container buildLoiKhuyen(BuildContext context, int _tamThu, int _tamTruong) {
-    Color selectionColor = null;
-    String suggestion = null;
+  Container buildLoiKhuyen(BuildContext context, int _canNang) {
+    Color selectionColor = Colors.green[200];
+    String suggestion = "Yuul B.Alwright";
 
-    if (_tamThu < 90) {
-      if (_tamTruong < 60) {
-        suggestion = loiKhuyen[0];
-        selectionColor = warningState;
-      } else if (_tamTruong >= 60 && _tamTruong <= 84) {
-        suggestion = loiKhuyen[1];
-        selectionColor = normalState;
-      } else {
-        suggestion = loiKhuyen[3];
-        selectionColor = warningState;
-      }
-    } else if (_tamThu >= 90 && _tamThu <= 110) {
-      if (_tamTruong < 60) {
-        suggestion = loiKhuyen[0];
-        selectionColor = warningState;
-      } else if (_tamTruong >= 60 && _tamTruong <= 84) {
-        suggestion = loiKhuyen[1];
-        selectionColor = normalState;
-      } else {
-        suggestion = loiKhuyen[3];
-        selectionColor = warningState;
-      }
-    } else if (_tamThu > 110 && _tamThu <= 130) {
-      if (_tamTruong < 60) {
-        suggestion = loiKhuyen[0];
-        selectionColor = warningState;
-      } else if (_tamTruong >= 60 && _tamTruong <= 84) {
-        suggestion = loiKhuyen[2];
-        selectionColor = normalState;
-      } else if (_tamTruong > 84 && _tamTruong <= 90) {
-        suggestion = loiKhuyen[3];
-        selectionColor = warningState;
-      } else {
-        suggestion = loiKhuyen[4];
-        selectionColor = dangerousState;
-      }
-    } else if (_tamThu > 130 && _tamThu <= 139) {
-      suggestion = loiKhuyen[3];
-      selectionColor = warningState;
-    } else if (_tamThu > 139) {
-      suggestion = loiKhuyen[4];
-      selectionColor = dangerousState;
-    }
     return Container(
       decoration: BoxDecoration(
         color: selectionColor,
@@ -554,7 +468,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
           Text(
             suggestion,
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontSize: 19.0,
             ),
           ),
@@ -598,11 +512,10 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
     );
   }
 
-  void postToFireStore({int tamThu, int tamTruong}) async {
-    var reference = FirebaseFirestore.instance.collection('blood_pressure');
+  void postToFireStore({int nhipTim}) async {
+    var reference = FirebaseFirestore.instance.collection('heart_rate');
     reference.add({
-      "tamThu": tamThu,
-      "tamTruong": tamTruong,
+      "nhipTim": nhipTim,
       "ownerId": currentUser.id,
       "timestamp": DateTime.now(),
     }).then((DocumentReference doc) {
@@ -611,15 +524,15 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
     });
   }
 
-  Stream<List<ChiSoHuyetAp>> _getChiSoHuyetAp() {
+  Stream<List<ChiSoNhipTim>> _getChiSoNhipTim() {
     final snapshots = FirebaseFirestore.instance
-        .collection('blood_pressure')
+        .collection('heart_rate')
         .orderBy('timestamp')
         .where('ownerId', isEqualTo: currentUser.id)
         .snapshots();
     return snapshots.map((snapshot) => snapshot.docs
         .map(
-          (snapshot) => ChiSoHuyetAp.fromMap(snapshot.data()),
+          (snapshot) => ChiSoNhipTim.fromMap(snapshot.data()),
         )
         .toList());
   }

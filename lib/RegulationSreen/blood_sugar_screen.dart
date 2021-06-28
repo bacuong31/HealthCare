@@ -8,45 +8,49 @@ import 'package:health_care/constants.dart';
 
 import '../main.dart';
 
-class ChiSoNuoc {
-  final int luongNuoc;
-  final int canNang;
+class ChiSoDuongHuyet {
+  final int duongHuyet;
+  final String trangThai;
   final DateTime ngayCapNhat;
   final String id;
 
-  const ChiSoNuoc({this.luongNuoc, this.canNang, this.ngayCapNhat, this.id});
+  const ChiSoDuongHuyet(
+      {this.duongHuyet, this.trangThai, this.ngayCapNhat, this.id});
 
-  factory ChiSoNuoc.fromDocument(DocumentSnapshot document) {
-    return ChiSoNuoc(
-      luongNuoc: document.data()['luongNuoc'],
-      canNang: document.data()['canNang'],
+  factory ChiSoDuongHuyet.fromDocument(DocumentSnapshot document) {
+    return ChiSoDuongHuyet(
+      duongHuyet: document.data()['duongHuyet'],
+      trangThai: document.data()['trangThai'],
       ngayCapNhat: document.data()['timestamp'].toDate(),
       id: document.data()['id'],
     );
   }
 
-  factory ChiSoNuoc.fromMap(Map<String, dynamic> data) {
-    return ChiSoNuoc(
-      luongNuoc: data['luongNuoc'],
-      canNang: data['canNang'],
+  factory ChiSoDuongHuyet.fromMap(Map<String, dynamic> data) {
+    return ChiSoDuongHuyet(
+      duongHuyet: data['duongHuyet'],
+      trangThai: data['trangThai'],
       ngayCapNhat: data['timestamp'].toDate(),
       id: data['id'],
     );
   }
 }
 
-class WaterConsumptionScreen extends StatefulWidget {
-  const WaterConsumptionScreen({Key key}) : super(key: key);
+class BloodSugarScreen extends StatefulWidget {
+  const BloodSugarScreen({Key key}) : super(key: key);
 
   @override
-  _WaterConsumptionScreenState createState() => _WaterConsumptionScreenState();
+  _BloodSugarScreenState createState() => _BloodSugarScreenState();
 }
 
-class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
-  List<ChiSoNuoc> listChiSoNuoc = [];
+class _BloodSugarScreenState extends State<BloodSugarScreen> {
+  List<ChiSoDuongHuyet> listChiSoDuongHuyet = [];
 
   List<String> loiKhuyen = [
-    "Huyết áp của bạn đang ở mức thấp. Hãy bổ sung nước và đường cho cơ thể"
+    "Tình trạng đường huyết của bạn hơi thấp, hãy giữ gìn sức khỏe nhé",
+    "Tình trạng đường huyết của bạn bình thường. Bạn có thể tìm hiểu thêm thông qua mục tìm kiếm",
+    "Bạn đang có dấu hiệu của bệnh tiểu đường. Ứng dụng khuyên bạn nên đến phòng khám uy tín gần nhất",
+    "Bạn đang bị bệnh tiểu đường. Ứng dụng khuyên bạn nên đến phòng khám uy tín gần nhất",
   ];
 
   @override
@@ -57,58 +61,88 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
           showDialog(
             context: context,
             builder: (context) {
-              String _newCanNang = '';
-              return AlertDialog(
-                title: Text('Thêm chỉ số'),
-                content: Container(
-                  height: 150,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 8.0),
-                      Text("Cân nặng"),
-                      TextField(
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly
+              String _newDuongHuyet = '';
+              String _trangThai = "No";
+              return StatefulBuilder(
+                builder: (context, setState) {
+                  return AlertDialog(
+                    title: Text('Thêm chỉ số'),
+                    content: Container(
+                      height: 250,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Đường huyết"),
+                          TextField(
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            autofocus: true,
+                            onChanged: (value) {
+                              _newDuongHuyet = value;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          Text("Trạng thái"),
+                          Column(
+                            children: <Widget>[
+                              RadioListTile<String>(
+                                  title: Text("No"),
+                                  value: "No",
+                                  groupValue: _trangThai,
+                                  onChanged: (String value) {
+                                    setState(() {
+                                      print("no");
+                                      _trangThai = value;
+                                    });
+                                  }),
+                              RadioListTile<String>(
+                                  title: Text("Đói"),
+                                  value: "Đói",
+                                  groupValue: _trangThai,
+                                  onChanged: (String value) {
+                                    setState(() {
+                                      print("đói");
+                                      _trangThai = value;
+                                    });
+                                  }),
+                            ],
+                          ),
                         ],
-                        autofocus: true,
-                        onChanged: (value) {
-                          _newCanNang = value;
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: Text('Hủy'.toUpperCase()),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Thêm chỉ số'.toUpperCase()),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          if (_newDuongHuyet == "") {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                "Thất bại, bạn cần nhập chỉ số đường huyết",
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                              duration: Duration(seconds: 2),
+                            ));
+                          } else {
+                            postToFireStore(
+                              duongHuyet: int.parse(_newDuongHuyet),
+                              trangThai: _trangThai,
+                            );
+                          }
                         },
                       ),
                     ],
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    child: Text('Hủy'.toUpperCase()),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  TextButton(
-                    child: Text('Thêm chỉ số'.toUpperCase()),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      if (_newCanNang == "") {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                            "Thất bại, bạn cần nhập chỉ số cân nặng",
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                          duration: Duration(seconds: 2),
-                        ));
-                      } else {
-                        postToFireStore(
-                          canNang: int.parse(_newCanNang),
-                          luongNuoc: int.parse(_newCanNang) * 31,
-                        );
-                      }
-                    },
-                  ),
-                ],
+                  );
+                },
               );
             },
           );
@@ -119,10 +153,10 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
       appBar: AppBar(
         title: Transform(
             transform: Matrix4.translationValues(-28, 0.0, 0.0),
-            child: Center(child: Text("Nhu cầu nước"))),
+            child: Center(child: Text("Trạng thái"))),
       ),
-      body: StreamBuilder<List<ChiSoNuoc>>(
-          stream: _getChiSoNuoc(),
+      body: StreamBuilder<List<ChiSoDuongHuyet>>(
+          stream: _getChiSoDuongHuyet(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               print(snapshot);
@@ -130,7 +164,7 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                   child: Text("Có lỗi xảy ra! Vui lòng thử lại sau."));
             } else if (snapshot.hasData) {
               final chiSo = snapshot.data;
-              listChiSoNuoc = chiSo;
+              listChiSoDuongHuyet = chiSo;
             }
             return ListView(
               children: <Widget>[
@@ -141,7 +175,7 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(16.0)),
                     ),
-                    child: listChiSoNuoc.length == 0
+                    child: listChiSoDuongHuyet.length == 0
                         ? Container(
                             padding: EdgeInsets.all(10.0),
                             alignment: Alignment.center,
@@ -151,12 +185,12 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 buildChiSo(
-                                  "Cân nặng",
+                                  "Đường Huyết",
                                   "--",
                                   "",
                                 ),
                                 buildChiSo(
-                                  "Nhu cầu nước",
+                                  "Trạng thái",
                                   "--",
                                   "",
                                 ),
@@ -175,14 +209,16 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     buildChiSo(
-                                      "Cân nặng",
-                                      listChiSoNuoc.last.canNang.toString(),
-                                      "kg",
+                                      "Đường huyết",
+                                      listChiSoDuongHuyet.last.duongHuyet
+                                          .toString(),
+                                      "mg/dl",
                                     ),
                                     buildChiSo(
-                                      "Nhu cầu nước",
-                                      listChiSoNuoc.last.luongNuoc.toString(),
-                                      "ml",
+                                      "Trạng thái",
+                                      listChiSoDuongHuyet.last.trangThai
+                                          .toString(),
+                                      "",
                                     ),
                                   ],
                                 ),
@@ -197,7 +233,8 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                         ),
                                       ),
                                       TextSpan(
-                                        text: listChiSoNuoc.last.ngayCapNhat
+                                        text: listChiSoDuongHuyet
+                                            .last.ngayCapNhat
                                             .toString()
                                             .substring(0, 10),
                                         // Chỉ lấy đến ngày
@@ -217,63 +254,95 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                     showDialog(
                                       context: context,
                                       builder: (context) {
-                                        String _newCanNang = '';
-                                        return AlertDialog(
-                                          title: Text('Thay đổi chỉ số'),
-                                          content: Container(
-                                            height: 150,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                SizedBox(height: 8.0),
-                                                Text("Cân nặng"),
-                                                TextField(
-                                                  keyboardType:
-                                                      TextInputType.number,
-                                                  inputFormatters: <
-                                                      TextInputFormatter>[
-                                                    FilteringTextInputFormatter
-                                                        .digitsOnly
-                                                  ],
-                                                  autofocus: true,
-                                                  onChanged: (value) {
-                                                    _newCanNang = value;
-                                                  },
-                                                ),
-                                                SizedBox(height: 8.0),
-                                              ],
+                                        String _newDuongHuyet = '';
+                                        String _trangThai = "No";
+                                        return StatefulBuilder(
+                                            builder: (context, setState) {
+                                          return AlertDialog(
+                                            title: Text('Thay đổi chỉ số'),
+                                            content: Container(
+                                              height: 190,
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  SizedBox(height: 8.0),
+                                                  Text("Đường huyết"),
+                                                  TextField(
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                    inputFormatters: <
+                                                        TextInputFormatter>[
+                                                      FilteringTextInputFormatter
+                                                          .digitsOnly
+                                                    ],
+                                                    autofocus: true,
+                                                    onChanged: (value) {
+                                                      _newDuongHuyet = value;
+                                                    },
+                                                  ),
+                                                  Column(
+                                                    children: <Widget>[
+                                                      RadioListTile<String>(
+                                                          title: Text("No"),
+                                                          value: "No",
+                                                          groupValue:
+                                                              _trangThai,
+                                                          onChanged:
+                                                              (String value) {
+                                                            setState(() {
+                                                              print("no");
+                                                              _trangThai =
+                                                                  value;
+                                                            });
+                                                          }),
+                                                      RadioListTile<String>(
+                                                          title: Text("Đói"),
+                                                          value: "Đói",
+                                                          groupValue:
+                                                              _trangThai,
+                                                          onChanged:
+                                                              (String value) {
+                                                            setState(() {
+                                                              _trangThai =
+                                                                  value;
+                                                            });
+                                                          }),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              child: Text('Hủy'.toUpperCase()),
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                            ),
-                                            TextButton(
-                                              child: Text(
-                                                  'Lưu thay đổi'.toUpperCase()),
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                                FirebaseFirestore.instance
-                                                    .collection('water')
-                                                    .doc(listChiSoNuoc.last.id)
-                                                    .update({
-                                                  "canNang":
-                                                      int.parse(_newCanNang),
-                                                  "luongNuoc":
-                                                      int.parse(_newCanNang) /
-                                                          10,
-                                                  "timestamp": DateTime.now(),
-                                                });
-                                              },
-                                            ),
-                                          ],
-                                        );
+                                            actions: [
+                                              TextButton(
+                                                child:
+                                                    Text('Hủy'.toUpperCase()),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                              TextButton(
+                                                child: Text('Lưu thay đổi'
+                                                    .toUpperCase()),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                  FirebaseFirestore.instance
+                                                      .collection('blood_sugar')
+                                                      .doc(listChiSoDuongHuyet
+                                                          .last.id)
+                                                      .update({
+                                                    "duongHuyet": int.parse(
+                                                        _newDuongHuyet),
+                                                    "trangThai": _trangThai,
+                                                    "timestamp": DateTime.now(),
+                                                  });
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },);
                                       },
                                     );
                                   },
@@ -306,9 +375,12 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                 ),
                 SizedBox(height: defaultPadding),
                 Center(
-                  child: listChiSoNuoc.length == 0
+                  child: listChiSoDuongHuyet.length == 0
                       ? Container()
-                      : buildLoiKhuyen(context, listChiSoNuoc.last.canNang),
+                      : buildLoiKhuyen(
+                          context,
+                          listChiSoDuongHuyet.last.duongHuyet,
+                          listChiSoDuongHuyet.last.trangThai),
                 ),
                 SizedBox(height: defaultPadding),
                 Center(
@@ -329,12 +401,12 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              "Cân nặng",
+                              "Đường huyết",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 15.0),
                             ),
                             Text(
-                              "Nhu cầu nước",
+                              "Trạng thái",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 15.0),
                             ),
@@ -349,7 +421,7 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "(kg)",
+                              "(mg/dl)",
                               style: TextStyle(
                                   fontWeight: FontWeight.normal,
                                   fontSize: 13.0),
@@ -358,7 +430,7 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                               transform:
                                   Matrix4.translationValues(-28, 0.0, 0.0),
                               child: Text(
-                                "(ml)",
+                                "",
                                 style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 13.0),
@@ -372,7 +444,7 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                             ),
                           ],
                         ),
-                        listChiSoNuoc.length == 0
+                        listChiSoDuongHuyet.length == 0
                             ? Container(
                                 height: 50,
                                 padding: EdgeInsets.symmetric(
@@ -393,7 +465,8 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                     Text("--------",
                                         style: TextStyle(fontSize: 20)),
                                     Transform(
-                                      transform: Matrix4.translationValues(-20.0, 0, 0),
+                                      transform:
+                                          Matrix4.translationValues(-5.0, 0, 0),
                                       child: Text("--------",
                                           style: TextStyle(fontSize: 20)),
                                     ),
@@ -405,9 +478,9 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                             : ListView.builder(
                                 physics: NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
-                                itemCount: listChiSoNuoc.length > 3
+                                itemCount: listChiSoDuongHuyet.length > 3
                                     ? 3
-                                    : listChiSoNuoc.length,
+                                    : listChiSoDuongHuyet.length,
                                 itemBuilder: (context, index) {
                                   return Container(
                                     height: 50,
@@ -425,26 +498,33 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
-                                      children: listChiSoNuoc.length >= 3
+                                      children: listChiSoDuongHuyet.length >= 3
                                           ? [
                                               Text(
-                                                listChiSoNuoc[
-                                                        listChiSoNuoc.length -
+                                                listChiSoDuongHuyet[
+                                                        listChiSoDuongHuyet
+                                                                .length -
                                                             3 +
                                                             index]
-                                                    .canNang
+                                                    .duongHuyet
                                                     .toString(),
                                               ),
-                                              Text(
-                                                listChiSoNuoc[
-                                                        listChiSoNuoc.length -
-                                                            3 +
-                                                            index]
-                                                    .luongNuoc
-                                                    .toString(),
+                                              Transform(
+                                                transform:
+                                                    Matrix4.translationValues(
+                                                        20, 0.0, 0.0),
+                                                child: Text(
+                                                  listChiSoDuongHuyet[
+                                                          listChiSoDuongHuyet
+                                                                  .length -
+                                                              3 +
+                                                              index]
+                                                      .trangThai,
+                                                ),
                                               ),
-                                              Text(listChiSoNuoc[
-                                                      listChiSoNuoc.length -
+                                              Text(listChiSoDuongHuyet[
+                                                      listChiSoDuongHuyet
+                                                              .length -
                                                           3 +
                                                           index]
                                                   .ngayCapNhat
@@ -454,19 +534,21 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                             ]
                                           : [
                                               Text(
-                                                listChiSoNuoc[index]
-                                                    .canNang
+                                                listChiSoDuongHuyet[index]
+                                                    .duongHuyet
                                                     .toString(),
                                               ),
                                               Transform(
-                                                transform: Matrix4.translationValues(12, 0.0, 0.0),
+                                                transform:
+                                                    Matrix4.translationValues(
+                                                        20, 0.0, 0.0),
                                                 child: Text(
-                                                  listChiSoNuoc[index]
-                                                      .luongNuoc
+                                                  listChiSoDuongHuyet[index]
+                                                      .trangThai
                                                       .toString(),
                                                 ),
                                               ),
-                                              Text(listChiSoNuoc[index]
+                                              Text(listChiSoDuongHuyet[index]
                                                   .ngayCapNhat
                                                   .toUtc()
                                                   .toString()
@@ -487,10 +569,38 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
     );
   }
 
-  Container buildLoiKhuyen(BuildContext context, int _canNang) {
+  Container buildLoiKhuyen(
+      BuildContext context, int duongHuyet, String trangThai) {
     Color selectionColor = Colors.green[200];
-    String soLy = (_canNang/11).round().toString();
-    String suggestion = "Mỗi ngày bạn nên uống khoảng $soLy cốc nước đầy để cơ thể khỏe mạnh";
+    String suggestion = "";
+
+    if (trangThai == "No") {
+      if (duongHuyet <= 25) {
+        suggestion = loiKhuyen[0];
+        selectionColor = normalState;
+      } else if (duongHuyet <= 140) {
+        suggestion = loiKhuyen[1];
+        selectionColor = normalState;
+      } else if (duongHuyet <= 200) {
+        suggestion = loiKhuyen[2];
+        selectionColor = warningState;
+      } else {
+        suggestion = loiKhuyen[3];
+        selectionColor = dangerousState;
+      }
+    }
+    if (trangThai == "Đói") {
+      if (duongHuyet <= 100) {
+        suggestion = loiKhuyen[1];
+        selectionColor = normalState;
+      } else if (duongHuyet <= 125) {
+        suggestion = loiKhuyen[2];
+        selectionColor = warningState;
+      } else {
+        suggestion = loiKhuyen[3];
+        selectionColor = dangerousState;
+      }
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -551,11 +661,11 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
     );
   }
 
-  void postToFireStore({int canNang, int luongNuoc}) async {
-    var reference = FirebaseFirestore.instance.collection('water');
+  void postToFireStore({int duongHuyet, String trangThai}) async {
+    var reference = FirebaseFirestore.instance.collection('blood_sugar');
     reference.add({
-      "canNang": canNang,
-      "luongNuoc": luongNuoc,
+      "duongHuyet": duongHuyet,
+      "trangThai": trangThai,
       "ownerId": currentUser.id,
       "timestamp": DateTime.now(),
     }).then((DocumentReference doc) {
@@ -564,15 +674,15 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
     });
   }
 
-  Stream<List<ChiSoNuoc>> _getChiSoNuoc() {
+  Stream<List<ChiSoDuongHuyet>> _getChiSoDuongHuyet() {
     final snapshots = FirebaseFirestore.instance
-        .collection('water')
+        .collection('blood_sugar')
         .orderBy('timestamp')
         .where('ownerId', isEqualTo: currentUser.id)
         .snapshots();
     return snapshots.map((snapshot) => snapshot.docs
         .map(
-          (snapshot) => ChiSoNuoc.fromMap(snapshot.data()),
+          (snapshot) => ChiSoDuongHuyet.fromMap(snapshot.data()),
         )
         .toList());
   }
