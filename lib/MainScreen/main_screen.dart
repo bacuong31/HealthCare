@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 import 'package:health_care/MainScreen/profile.dart';
 
@@ -6,6 +8,7 @@ import 'package:health_care/RegulationSreen/blood_pressure_screen.dart';
 import 'package:health_care/RegulationSreen/blood_sugar_screen.dart';
 import 'package:health_care/RegulationSreen/heart_rate.dart';
 import 'package:health_care/RegulationSreen/water_screen.dart';
+import 'package:health_care/model/Diseases.dart';
 
 import 'package:health_care/constants.dart';
 import 'package:health_care/main.dart';
@@ -19,8 +22,6 @@ class HeathFunctionClassInfo {
   HeathFunctionClassInfo({this.Name, this.ImageURL});
 }
 
-
-
 class MainScreen extends StatefulWidget {
   const MainScreen({Key key, @required this.auth}) : super(key: key);
   final AuthBase auth;
@@ -30,24 +31,34 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  List <HeathFunctionClassInfo> demoList = [
-    HeathFunctionClassInfo(Name: "Huyết áp", ImageURL: 'assets/images/blood-pressure.png'),
-    HeathFunctionClassInfo(Name: "Nhu cầu nước",ImageURL: 'assets/images/water.png'),
-    HeathFunctionClassInfo(Name: "Kiểm tra nhịp tim", ImageURL: 'assets/images/heart-rate.png'),
-    HeathFunctionClassInfo(Name: "Đường huyết", ImageURL: 'assets/images/blood-sugar.png'),
+  List<HeathFunctionClassInfo> demoList = [
+    HeathFunctionClassInfo(
+        Name: "Huyết áp", ImageURL: 'assets/images/blood-pressure.png'),
+    HeathFunctionClassInfo(
+        Name: "Nhu cầu nước", ImageURL: 'assets/images/water.png'),
+    HeathFunctionClassInfo(
+        Name: "Kiểm tra nhịp tim", ImageURL: 'assets/images/heart-rate.png'),
+    HeathFunctionClassInfo(
+        Name: "Đường huyết", ImageURL: 'assets/images/blood-sugar.png'),
   ];
+
+  List<Diseases> diseases = [];
+
   String buildLoiChao() {
     DateTime time = new DateTime.now();
     if (time.hour > 6 && time.hour <= 11) {
       return "Chào buổi sáng!";
     }
-    if (time.hour > 11 && time.hour <= 14){
+    if (time.hour > 11 && time.hour <= 14) {
       return "Chào buổi trưa!";
     }
-    if (time.hour > 14 && time.hour <= 18){
+    if (time.hour > 14 && time.hour <= 18) {
       return "Chào buổi chiều!";
     }
-    return "Chào buổi tối!";
+    if (time.hour > 18 && time.hour <= 21) {
+      return "Chào buổi tối!";
+    }
+    return "Chúc ngủ ngon";
   }
 
   void buildScreen(int index, BuildContext context) {
@@ -92,7 +103,8 @@ class _MainScreenState extends State<MainScreen> {
           );
           break;
         }
-      default: break;
+      default:
+        break;
     }
   }
 
@@ -115,11 +127,10 @@ class _MainScreenState extends State<MainScreen> {
           icon: Icon(Icons.account_circle_rounded),
           iconSize: 40,
           onPressed: () {
-             Navigator.push(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => Profile()),
             );
-
           },
         ),
         title: Text(
@@ -145,7 +156,7 @@ class _MainScreenState extends State<MainScreen> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
-                    fontSize: 18.0,
+                    fontSize: 20.0,
                   ))),
           Padding(
             padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
@@ -209,7 +220,7 @@ class _MainScreenState extends State<MainScreen> {
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
-                  fontSize: 18),
+                  fontSize: 20.0),
             ),
           ),
           SizedBox(height: 8.0),
@@ -237,16 +248,12 @@ class _MainScreenState extends State<MainScreen> {
                         buildScreen(index, context);
                       },
                       child: Container(
-
                         height: 140.0,
                         width: 200.0,
                         decoration: BoxDecoration(
-
                           image: DecorationImage(
-
-                            fit: BoxFit.scaleDown,
-                            image: AssetImage(demoList[index].ImageURL)
-                          ),
+                              fit: BoxFit.scaleDown,
+                              image: AssetImage(demoList[index].ImageURL)),
                           //fix later
                           color: Colors.white,
                           borderRadius: const BorderRadius.all(
@@ -258,21 +265,202 @@ class _MainScreenState extends State<MainScreen> {
                     Padding(
                       padding: const EdgeInsets.only(left: 5.0, top: 5.0),
                       child: Text(
-                          demoList[index].Name,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.black),
-                          textAlign: TextAlign.start,
-                        ),
-
+                        demoList[index].Name,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black),
+                        textAlign: TextAlign.start,
+                      ),
                     )
                   ],
                 ),
               ),
             ),
           ),
+          SizedBox(height: defaultPadding),
+          Container(
+            padding: EdgeInsets.only(left: 8.0),
+            child: Text(
+              "Thông tin thường nhật",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                fontSize: 20.0,
+              ),
+            ),
+          ),
+          StreamBuilder<List<Diseases>>(
+              stream: _getBenh(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Container(
+                    alignment: FractionalOffset.center,
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasData) {
+                  final data = snapshot.data;
+                  diseases = data;
+                }
+                return _buildThongTinThuongNhat(diseases);
+              })
         ],
+      ),
+    );
+  }
+
+  Stream<List<Diseases>> _getBenh() {
+    final snapshots =
+        FirebaseFirestore.instance.collection('diseases').snapshots();
+    return snapshots.map((snapshot) => snapshot.docs
+        .map(
+          (snapshot) => Diseases.fromMap(snapshot.data()),
+        )
+        .toList());
+  }
+
+  _buildThongTinBenh(List<Diseases> diseases,int index) {
+    Navigator.push(context, new MaterialPageRoute(builder: (context) => Scaffold(
+      body: new ListView(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.fromLTRB(15, 20, 10, 0),
+            alignment: Alignment.topLeft,
+            child: Text(
+              "Mô tả",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          Container(
+            padding: EdgeInsets.fromLTRB(15, 7, 10, 10),
+            child: Text(
+              diseases[index].moTa,
+              style: TextStyle(
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.justify,
+            ),
+          ),
+          Divider(height: 10,),
+          Container(
+            padding: EdgeInsets.fromLTRB(15, 10, 10, 0),
+            alignment: Alignment.topLeft,
+            child: Text(
+              "Triệu chứng",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          Container(
+            padding: EdgeInsets.fromLTRB(15, 7, 10, 10),
+            child: Text(
+              diseases[index].trieuChung,
+              style: TextStyle(
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.justify,
+            ),
+          ),
+          Divider(height: 10,),
+          Container(
+            padding: EdgeInsets.fromLTRB(15, 10, 10, 0),
+            alignment: Alignment.topLeft,
+            child: Text(
+              "Chuẩn đoán",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          Container(
+            padding: EdgeInsets.fromLTRB(15, 7, 10, 10),
+            child: Text(
+              diseases[index].chuanDoan,
+              style: TextStyle(
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.justify,
+            ),
+          ),
+          Divider(height: 10,),
+          Container(
+            padding: EdgeInsets.fromLTRB(15, 10, 10, 0),
+            alignment: Alignment.topLeft,
+            child: Text(
+              "Điều trị",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          Container(
+            padding: EdgeInsets.fromLTRB(15, 7, 10, 10),
+            child: Text(
+              diseases[index].dieuTri,
+              style: TextStyle(
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.justify,
+            ),
+          ),
+        ],
+      ),
+    ) ),) ;
+  }
+
+  Widget _buildThongTinThuongNhat(List<Diseases> diseases) {
+    var rng = new Random();
+    int randomIndex = rng.nextInt(diseases.length);
+    return Container(
+      margin:
+          const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0, bottom: 8.0),
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          primary: Colors.white,
+          backgroundColor: Colors.indigo[300],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+        ),
+        onPressed: () {_buildThongTinBenh(diseases, randomIndex);},
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 16.0),
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                diseases[randomIndex].tenBenh.toUpperCase(),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                ),
+              ),
+              SizedBox(height: 4.0),
+              Text(
+                diseases[randomIndex].tomTat,
+                style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 18.0,
+                ),
+                maxLines: 5,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

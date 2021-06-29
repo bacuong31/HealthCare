@@ -8,8 +8,9 @@ class Diseases {
   final String trieuChung;
   final String chuanDoan;
   final String dieuTri;
+  final String tomTat;
 
-  const Diseases({this.id,this.tenBenh,this.moTa,this.trieuChung,this.chuanDoan,this.dieuTri});
+  const Diseases({this.id,this.tenBenh,this.moTa,this.trieuChung,this.chuanDoan,this.dieuTri,this.tomTat});
 
   factory Diseases.fromDocument(DocumentSnapshot document) {
     return Diseases(
@@ -19,6 +20,7 @@ class Diseases {
       trieuChung: document.data()['trieuChung'],
       chuanDoan: document.data()['chuanDoan'],
       dieuTri: document.data()['dieuTri'],
+      tomTat: document.data()['tomTat'],
     );
   }
 
@@ -30,6 +32,7 @@ class Diseases {
       trieuChung: data['trieuChung'],
       chuanDoan:data['chuanDoan'],
       dieuTri: data['dieuTri'],
+      tomTat: data['tomTat'],
     );
   }
 }

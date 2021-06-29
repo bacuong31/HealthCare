@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:health_care/constants.dart';
-
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../main.dart';
 

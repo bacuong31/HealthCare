@@ -1,9 +1,8 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care/model/Diseases.dart';
 import 'package:intl/intl.dart';
+
 class SearchResult extends StatelessWidget {
   String query;
   List<Diseases> diseases = [];
@@ -39,7 +38,6 @@ class SearchResult extends StatelessWidget {
 
   Widget _buildThongTinBenh(List<Diseases> diseases) {
     return ListView(
-
       children: <Widget>[
         Container(
           padding: EdgeInsets.fromLTRB(15, 20, 10, 0),

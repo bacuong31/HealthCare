@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:health_care/constants.dart';
-
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../main.dart';
 
 class ChiSoNhipTim {
@@ -288,6 +288,39 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
                               ],
                             ),
                           ),
+                  ),
+                ),
+                SizedBox(height: defaultPadding),
+                Center(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.85,
+                    child: SfLinearGauge(
+                      minorTicksPerInterval: 1,
+                      useRangeColorForAxis: true,
+                      animateAxis: true,
+                      axisTrackStyle: LinearAxisTrackStyle(thickness: 1),
+                      minimum: 0.0,
+                      maximum: 120.0,
+                      ranges: <LinearGaugeRange>[
+                        LinearGaugeRange(
+                            startValue: 0,
+                            endValue: 100,
+                            position: LinearElementPosition.outside,
+                            color: normalState,),
+                        LinearGaugeRange(
+                            startValue: 100,
+                            endValue: 120,
+                            position: LinearElementPosition.outside,
+                            color: dangerousState,),
+                      ],
+                      markerPointers: [
+                        LinearShapePointer(
+                          value: listChiSoNhipTim.length == 0
+                              ? 60.0
+                              : listChiSoNhipTim.last.nhipTim.toDouble(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(height: defaultPadding),
