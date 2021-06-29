@@ -99,6 +99,7 @@ class _ProfileState extends State<Profile> {
             }*/
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text('Thông tin người dùng'),
         leading: IconButton(
           icon: Icon(
@@ -128,9 +129,11 @@ class _ProfileState extends State<Profile> {
               Center(
                 child: ProfileImage(context),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 60),
               buildTextField("Họ tên", nameController),
+
               buildTextBirthDay(),
+
               buildSexual(),
             ],
           ),
@@ -240,12 +243,23 @@ class _ProfileState extends State<Profile> {
                       radius: 50.0,
                     )),
           Positioned(
-              right: -9,
+              right: -6,
               bottom: 0,
               child: SizedBox(
-                height: 45,
-                width: 45,
-                child: FlatButton(
+                height: 40,
+                width: 40,
+                child:RawMaterialButton(
+                  onPressed: () {
+                    changeProfileImage(context);
+                  },
+                  elevation: 2.0,
+                  fillColor: Colors.green,
+                  //fillColor: Color(0x60FFFFFF),
+                  child: Icon(Icons.camera_alt_outlined, color: Colors.white, size: 20,),
+                  padding: EdgeInsets.all(10.0),
+                  shape: CircleBorder(),
+                ),
+                /*FlatButton(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50),
                     ),
@@ -253,13 +267,14 @@ class _ProfileState extends State<Profile> {
                     onPressed: () {
                       changeProfileImage(context);
                     },
-                    child: Image.asset('assets/images/camera.png')),
+                    child: Image.asset('assets/images/camera.png'))*/
               ))
         ]));
   }
 
   Widget buildTextBirthDay() {
     return TextFormField(
+
       focusNode: new AlwaysDisabledFocusNode(),
       controller: birthDayController,
       style: TextStyle(
@@ -303,9 +318,9 @@ class _ProfileState extends State<Profile> {
                 primary: Colors.deepPurple,
                 onPrimary: Colors.white,
                 surface: Colors.blueGrey,
-                onSurface: Colors.yellow,
+                onSurface: Colors.black,
               ),
-              dialogBackgroundColor: Colors.blue[500],
+              dialogBackgroundColor: Colors.blue[50],
             ),
             child: child,
           );
@@ -325,6 +340,7 @@ class _ProfileState extends State<Profile> {
     return Padding(
       padding: EdgeInsets.only(bottom: 30),
       child: TextFormField(
+
         style: TextStyle(
           fontSize: 20,
           color: Colors.black87,
