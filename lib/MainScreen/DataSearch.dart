@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:health_care/MainScreen/SearchResult.dart';
 
 var suggest = [
   "covid 19",
@@ -21,6 +23,8 @@ var recentSearch = [
 ];
 
 class DataSearch extends SearchDelegate<String> {
+  List<String> suggesion = [];
+
   DataSearch({
     String hintText,
     TextStyle textStyle,
@@ -36,7 +40,7 @@ class DataSearch extends SearchDelegate<String> {
   ThemeData appBarTheme(BuildContext context) {
     return ThemeData(
       primarySwatch: Colors.indigo,
-      scaffoldBackgroundColor: Color(0xFF202123),
+      scaffoldBackgroundColor: Colors.white,
     );
   }
 
@@ -84,7 +88,7 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final suggestionList = query.isEmpty
+/*     final suggestionList = query.isEmpty
         ? recentSearch
         : suggest.where((p) => p.contains(query)).toList();
     return ListView.builder(
@@ -116,6 +120,43 @@ class DataSearch extends SearchDelegate<String> {
         ),
       ),
       itemCount: suggestionList.length,
+    );*/
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance.collection('diseases').snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (!snapshot.hasData)
+          return Container(
+              alignment: FractionalOffset.center,
+              child: CircularProgressIndicator());
+
+        suggesion = [];
+        final results = snapshot.data.docs
+            .where((a) => a['tenBenh'].toLowerCase().contains(query.toLowerCase()))
+            .toList();
+        for (var temp in results) {
+          suggesion.add(temp.get('tenBenh').toString().toLowerCase());
+        }
+        return ListView.builder(
+          itemBuilder: (context, index) => ListTile(
+            onTap: () {
+              query = suggesion[index];
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => SearchResult(
+                            query: query,
+                          )));
+            },
+            tileColor: Colors.white,
+            leading: Icon(Icons.history),
+            title: Text(
+              suggesion[index],
+              style: TextStyle(color: Colors.grey),
+            ),
+          ),
+          itemCount: suggesion.length,
+        );
+      },
     );
   }
 }
