@@ -37,6 +37,8 @@ dependencies:
   material_design_icons_flutter: ^4.0.5955
   uuid: ^3.0.1
   syncfusion_flutter_gauges: ^19.1.69
+  flutter_local_notifications: ^5.0.0+1
+  rxdart: ^0.27.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

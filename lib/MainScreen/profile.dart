@@ -12,6 +12,7 @@ import 'package:uuid/uuid.dart';
 
 import '../landing_screen.dart';
 import '../main.dart';
+import 'main_screen.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -19,8 +20,10 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  final TextEditingController nameController = TextEditingController(text: currentUser.name);
-  final TextEditingController birthDayController = TextEditingController(text: currentUser.birthday);
+  final TextEditingController nameController =
+      TextEditingController(text: currentUser.name);
+  final TextEditingController birthDayController =
+      TextEditingController(text: currentUser.birthday);
 
   List<bool> _isSelected = [false, false];
   String _sexual;
@@ -114,7 +117,12 @@ class _ProfileState extends State<Profile> {
           IconButton(
               icon: Icon(Icons.check),
               onPressed: () {
-                applyChanges().then(Navigator.maybePop(context));
+                applyChanges();
+                Navigator.push(
+                  context,
+                  new MaterialPageRoute(builder: (context) => MainScreen()),
+                );
+                print(currentUser.name);
               })
         ],
       ),
@@ -131,9 +139,7 @@ class _ProfileState extends State<Profile> {
               ),
               SizedBox(height: 60),
               buildTextField("Họ tên", nameController),
-
               buildTextBirthDay(),
-
               buildSexual(),
             ],
           ),
@@ -248,14 +254,18 @@ class _ProfileState extends State<Profile> {
               child: SizedBox(
                 height: 40,
                 width: 40,
-                child:RawMaterialButton(
+                child: RawMaterialButton(
                   onPressed: () {
                     changeProfileImage(context);
                   },
                   elevation: 2.0,
                   fillColor: Colors.green,
                   //fillColor: Color(0x60FFFFFF),
-                  child: Icon(Icons.camera_alt_outlined, color: Colors.white, size: 20,),
+                  child: Icon(
+                    Icons.camera_alt_outlined,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                   padding: EdgeInsets.all(10.0),
                   shape: CircleBorder(),
                 ),
@@ -274,7 +284,6 @@ class _ProfileState extends State<Profile> {
 
   Widget buildTextBirthDay() {
     return TextFormField(
-
       focusNode: new AlwaysDisabledFocusNode(),
       controller: birthDayController,
       style: TextStyle(
@@ -340,7 +349,6 @@ class _ProfileState extends State<Profile> {
     return Padding(
       padding: EdgeInsets.only(bottom: 30),
       child: TextFormField(
-
         style: TextStyle(
           fontSize: 20,
           color: Colors.black87,
@@ -468,7 +476,8 @@ class _ProfileState extends State<Profile> {
     //print("[Ten] " + nameController.text);
     if (file != null) {
       if (currentUser.photoUrl != "") {
-        Reference ref = FirebaseStorage.instance.refFromURL(currentUser.photoUrl);
+        Reference ref =
+            FirebaseStorage.instance.refFromURL(currentUser.photoUrl);
         ref.delete();
       }
       uploadImage(file).then((data) => FirebaseFirestore.instance

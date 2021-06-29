@@ -4,9 +4,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+//import 'package:health_care/LocalNotifyManager.dart';
 import 'package:health_care/constants.dart';
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+
 import '../main.dart';
+
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+void initializeSetting() async {
+  var initAndoir = AndroidInitializationSettings('app_notification_icon');
+  var initSetting = InitializationSettings(android: initAndoir);
+  flutterLocalNotificationsPlugin.initialize(initSetting);
+}
 
 class ChiSoNuoc {
   final int luongNuoc;
@@ -50,10 +65,40 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
   ];
 
   @override
+  void initState() {
+    initializeSetting();
+    tz.initializeTimeZones();
+    super.initState();
+  }
+
+  Future<void> displayNotification() async {
+    print("sent noti");
+    flutterLocalNotificationsPlugin.zonedSchedule(
+      0,
+      "title",
+      "body",
+      tz.TZDateTime.now(tz.local).add(Duration(
+        seconds: 5,
+      )),
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'channel id',
+          'channel name',
+          'channel des',
+        ),
+      ),
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      androidAllowWhileIdle: true,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
+          await displayNotification();
           showDialog(
             context: context,
             builder: (context) {
@@ -266,7 +311,8 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                                   "canNang":
                                                       int.parse(_newCanNang),
                                                   "luongNuoc":
-                                                      int.parse(_newCanNang) * 31,
+                                                      int.parse(_newCanNang) *
+                                                          31,
                                                   "timestamp": DateTime.now(),
                                                 });
                                               },
@@ -392,7 +438,8 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                     Text("--------",
                                         style: TextStyle(fontSize: 20)),
                                     Transform(
-                                      transform: Matrix4.translationValues(-20.0, 0, 0),
+                                      transform: Matrix4.translationValues(
+                                          -20.0, 0, 0),
                                       child: Text("--------",
                                           style: TextStyle(fontSize: 20)),
                                     ),
@@ -458,7 +505,9 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                                     .toString(),
                                               ),
                                               Transform(
-                                                transform: Matrix4.translationValues(12, 0.0, 0.0),
+                                                transform:
+                                                    Matrix4.translationValues(
+                                                        12, 0.0, 0.0),
                                                 child: Text(
                                                   listChiSoNuoc[index]
                                                       .luongNuoc
@@ -488,8 +537,9 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
 
   Container buildLoiKhuyen(BuildContext context, int _canNang) {
     Color selectionColor = Colors.green[200];
-    String soLy = (_canNang/11).round().toString();
-    String suggestion = "Mỗi ngày bạn nên uống khoảng $soLy cốc nước đầy để cơ thể khỏe mạnh";
+    String soLy = (_canNang / 11).round().toString();
+    String suggestion =
+        "Mỗi ngày bạn nên uống khoảng $soLy cốc nước đầy để cơ thể khỏe mạnh";
 
     return Container(
       decoration: BoxDecoration(

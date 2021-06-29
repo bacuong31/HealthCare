@@ -1,114 +1,107 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'dart:io' show Platform;
-import 'package:rxdart/subjects.dart';
-import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tz;
 
-class LocalNotifyManager {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-  var initSetting;
+class LocalNotifyManager extends ChangeNotifier {
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
 
-  BehaviorSubject<ReceiveNotification> get didReceiveLocalNotificationSubject =>
-      BehaviorSubject<ReceiveNotification>();
 
-  LocalNotifyManager.init() {
-    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    if (Platform.isIOS) {
-      requestIOSPermission();
-    }
-    initializePlatform();
-    tz.initializeTimeZones();
+  Future initialize() async {
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+    AndroidInitializationSettings androidInitializationSettings =
+    AndroidInitializationSettings("app_notification_icon");
+
+    IOSInitializationSettings iosInitializationSettings =
+    IOSInitializationSettings();
+
+    final InitializationSettings initializationSettings =
+    InitializationSettings(
+        android: androidInitializationSettings,
+        iOS: iosInitializationSettings);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  requestIOSPermission() {
-    flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-        IOSFlutterLocalNotificationsPlugin>().requestPermissions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+  //Instant Notifications
+  Future instantNotification() async {
+    var android = AndroidNotificationDetails("id", "channel", "description");
+
+    var ios = IOSNotificationDetails();
+
+    var platform = new NotificationDetails(android: android, iOS: ios);
+
+    await _flutterLocalNotificationsPlugin.show(
+        0, "Demo instant notification", "Tap to do something", platform,
+        payload: "Welcome to demo app");
   }
 
-  void initializePlatform() {
-    var initSettingAndroid =
-    AndroidInitializationSettings("@mipmap/ic_launcher");
-    var initSettingIOS = IOSInitializationSettings(
-        requestSoundPermission: true,
-        defaultPresentBadge: true,
-        requestAlertPermission: true,
-        onDidReceiveLocalNotification: (id, title, body, payload) async {
-          ReceiveNotification notification = ReceiveNotification(
-            id: id, title: title, body: body, payload: payload,);
-          didReceiveLocalNotificationSubject.add(notification);
-        }
-    );
-    initSetting = InitializationSettings(
-        android: initSettingAndroid, iOS: initSettingIOS);
+  //Image notification
+  Future imageNotification() async {
+    var bigPicture = BigPictureStyleInformation(
+        DrawableResourceAndroidBitmap("app_notification_icon"),
+        largeIcon: DrawableResourceAndroidBitmap("app_notification_icon"),
+        contentTitle: "Demo image notification",
+        summaryText: "This is some text",
+        htmlFormatContent: true,
+        htmlFormatContentTitle: true);
+
+    var android = AndroidNotificationDetails("id", "channel", "description",
+        styleInformation: bigPicture);
+
+    var platform = new NotificationDetails(android: android);
+
+    await _flutterLocalNotificationsPlugin.show(
+        0, "Demo Image notification", "Tap to do something", platform,
+        payload: "Welcome to demo app");
   }
 
-  setOnNotificationReceive(Function onNotificationReceive) {
-    didReceiveLocalNotificationSubject.listen((notification) {
-      onNotificationReceive(notification);
-    });
+  //Stylish Notification
+  Future stylishNotification() async {
+    var android = AndroidNotificationDetails("id", "channel", "description",
+        color: Colors.deepOrange,
+        enableLights: true,
+        enableVibration: true,
+        largeIcon: DrawableResourceAndroidBitmap("app_notification_icon"),
+        styleInformation: MediaStyleInformation(
+            htmlFormatContent: true, htmlFormatTitle: true));
+
+    var platform = new NotificationDetails(android: android);
+
+    await _flutterLocalNotificationsPlugin.show(
+        0, "Demo Stylish notification", "Tap to do something", platform);
   }
 
-  setOnNotificationClick(Function onNotificationClick) async {
-    await flutterLocalNotificationsPlugin.initialize(initSetting,
-        onSelectNotification: (String payload) async {
-          onNotificationClick(payload);
-        });
+  //Sheduled Notification
+
+  Future sheduledNotification() async {
+    var interval = RepeatInterval.everyMinute;
+    var bigPicture = BigPictureStyleInformation(
+        DrawableResourceAndroidBitmap("app_notification_icon"),
+        largeIcon: DrawableResourceAndroidBitmap("app_notification_icon"),
+        contentTitle: "Demo image notification",
+        summaryText: "This is some text",
+        htmlFormatContent: true,
+        htmlFormatContentTitle: true);
+
+    var android = AndroidNotificationDetails("id", "channel", "description",
+        styleInformation: bigPicture);
+
+    var platform = new NotificationDetails(android: android);
+
+    await _flutterLocalNotificationsPlugin.periodicallyShow(
+        0,
+        "Demo Sheduled notification",
+        "Tap to do something",
+        interval,
+        platform);
   }
 
-  Future<void> showNotification() async {
-    var androidChanel = AndroidNotificationDetails(
-      "channelId",
-      "channelName",
-      "channelDescription",
-      importance: Importance.max,
-      playSound: true,
-      priority: Priority.high,
-    );
-    var platFormChannel = NotificationDetails(android: androidChanel);
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      "Test title",
-      "Test body",
-      platFormChannel,
-      payload: "New payload",
-    );
+  //Cancel notification
+
+  Future cancelNotification() async {
+    await _flutterLocalNotificationsPlugin.cancelAll();
   }
-
-  Future<void> showScheduleNotification() async {
-    var androidChanel = AndroidNotificationDetails(
-      "channelId",
-      "channelName",
-      "channelDescription",
-      importance: Importance.max,
-      playSound: true,
-      priority: Priority.high,
-    );
-    var platFormChannel = NotificationDetails(android: androidChanel);
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      "Test title",
-      "Test body",
-      platFormChannel,
-      payload: "New payload",
-    );
-  }
-}
-
-LocalNotifyManager localNotifyManager = LocalNotifyManager.init();
-
-class ReceiveNotification {
-  final int id;
-  final String title;
-  final String body;
-  final String payload;
-
-  ReceiveNotification({@required this.id,
-    @required this.title,
-    @required this.body,
-    @required this.payload});
 }
