@@ -16,31 +16,38 @@ import 'DataSearch.dart';
 class HeathFunctionClassInfo {
   final String Name, ImageURL;
 
-  HeathFunctionClassInfo(this.Name, this.ImageURL);
+  HeathFunctionClassInfo({this.Name, this.ImageURL});
 }
 
-List demoList = [
-  HeathFunctionClassInfo("Huyết áp", null),
-  HeathFunctionClassInfo("Nhu cầu nước", null),
-  HeathFunctionClassInfo("Kiểm tra nhịp tim", "assets/images/camera.png"),
-  HeathFunctionClassInfo("Đường huyết", null),
-];
 
-class MainScreen extends StatelessWidget {
+
+class MainScreen extends StatefulWidget {
   const MainScreen({Key key, @required this.auth}) : super(key: key);
   final AuthBase auth;
+
+  @override
+  _MainScreenState createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  List <HeathFunctionClassInfo> demoList = [
+    HeathFunctionClassInfo(Name: "Huyết áp", ImageURL: 'assets/images/blood-pressure.png'),
+    HeathFunctionClassInfo(Name: "Nhu cầu nước",ImageURL: 'assets/images/water.png'),
+    HeathFunctionClassInfo(Name: "Kiểm tra nhịp tim", ImageURL: 'assets/images/heart-rate.png'),
+    HeathFunctionClassInfo(Name: "Đường huyết", ImageURL: 'assets/images/blood-sugar.png'),
+  ];
   String buildLoiChao() {
     DateTime time = new DateTime.now();
     if (time.hour > 6 && time.hour <= 11) {
-      return "Chào buổi sáng";
+      return "Chào buổi sáng!";
     }
     if (time.hour > 11 && time.hour <= 14){
-      return "Chào buổi trưa";
+      return "Chào buổi trưa!";
     }
     if (time.hour > 14 && time.hour <= 18){
-      return "Chào buổi chiều";
+      return "Chào buổi chiều!";
     }
-    return "Chào buổi tối";
+    return "Chào buổi tối!";
   }
 
   void buildScreen(int index, BuildContext context) {
@@ -91,12 +98,13 @@ class MainScreen extends StatelessWidget {
 
   Future<void> _signOut() async {
     try {
-      await auth.signOut();
+      await widget.auth.signOut();
     } catch (e) {
       print(e.toString());
     }
+    currentUser = null;
   }
-  //TODO: sửa tên người dùng + thời gian
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,25 +115,16 @@ class MainScreen extends StatelessWidget {
           icon: Icon(Icons.account_circle_rounded),
           iconSize: 40,
           onPressed: () {
-            Navigator.push(
+             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => Profile()),
             );
+
           },
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              buildLoiChao(),
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-            ),
-            (currentUser != null) ?
-            Text(currentUser.name,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))
-            : Text(" ",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))
-          ],
+        title: Text(
+          buildLoiChao(),
+          style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
         ),
         actions: <Widget>[
           IconButton(
@@ -215,9 +214,9 @@ class MainScreen extends StatelessWidget {
           ),
           SizedBox(height: 8.0),
           Container(
-            color: panelColor,
-            height: 160.0,
-            child: new ListView.builder(
+            color: Colors.indigo[100],
+            height: 180.0,
+            child: ListView.builder(
               padding: EdgeInsets.all(4.0),
               itemCount: demoList.length,
               scrollDirection: Axis.horizontal,
@@ -230,7 +229,7 @@ class MainScreen extends StatelessWidget {
                   ),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     MaterialButton(
                       padding: EdgeInsets.zero,
@@ -238,10 +237,16 @@ class MainScreen extends StatelessWidget {
                         buildScreen(index, context);
                       },
                       child: Container(
-                        height: 120.0,
+
+                        height: 140.0,
                         width: 200.0,
                         decoration: BoxDecoration(
-                          image: null,
+
+                          image: DecorationImage(
+
+                            fit: BoxFit.scaleDown,
+                            image: AssetImage(demoList[index].ImageURL)
+                          ),
                           //fix later
                           color: Colors.white,
                           borderRadius: const BorderRadius.all(
@@ -253,13 +258,14 @@ class MainScreen extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 5.0, top: 5.0),
                       child: Text(
-                        demoList[index].Name,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.black),
-                        textAlign: TextAlign.start,
-                      ),
+                          demoList[index].Name,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black),
+                          textAlign: TextAlign.start,
+                        ),
+
                     )
                   ],
                 ),

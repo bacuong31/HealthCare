@@ -61,6 +61,10 @@ flutter:
     - assets/images/google-logo.png
     - assets/images/camera.png
     - assets/images/profile_default.png
+    - assets/images/heart-rate.png
+    - assets/images/water.png
+    - assets/images/blood-pressure.png
+    - assets/images/blood-sugar.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

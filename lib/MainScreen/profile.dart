@@ -458,7 +458,7 @@ class _ProfileState extends State<Profile> {
     DocumentSnapshot userRecord = await ref.doc(currentUser.id).get();
     if (userRecord.data() != null) {}
     userRecord = await ref.doc(currentUser.id).get();
-    currentUser = AppUser.fromDocument(userRecord);
+    currentUser = await AppUser.fromDocument(userRecord);
     //print("[IN-FUNCTION edited photo url] " + currentUser.photoUrl);
   }
 

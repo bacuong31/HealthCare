@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care/MainScreen/main_screen.dart';
-import 'package:health_care/home_screen.dart';
+
 import 'package:health_care/model/AppUser.dart';
 import 'package:health_care/service/auth.dart';
 import 'package:health_care/sign_in/sign_in_screen.dart';
@@ -63,7 +63,7 @@ class LandingScreen extends StatelessWidget {
 
     }
 
-    currentUser = AppUser.fromDocument(userRecord);
+    currentUser = await AppUser.fromDocument(userRecord);
 
 
   }
