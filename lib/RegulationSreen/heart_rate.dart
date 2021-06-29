@@ -202,7 +202,7 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
                                     showDialog(
                                       context: context,
                                       builder: (context) {
-                                        String _newCanNang = '';
+                                        String _newNhipTim = '';
                                         return AlertDialog(
                                           title: Text('Thay đổi chỉ số'),
                                           content: Container(
@@ -225,7 +225,7 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
                                                   ],
                                                   autofocus: true,
                                                   onChanged: (value) {
-                                                    _newCanNang = value;
+                                                    _newNhipTim = value;
                                                   },
                                                 ),
                                                 SizedBox(height: 8.0),
@@ -249,11 +249,8 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
                                                     .doc(listChiSoNhipTim
                                                         .last.id)
                                                     .update({
-                                                  "canNang":
-                                                      int.parse(_newCanNang),
-                                                  "luongNuoc":
-                                                      int.parse(_newCanNang) /
-                                                          10,
+                                                  "nhipTim":
+                                                      int.parse(_newNhipTim),
                                                   "timestamp": DateTime.now(),
                                                 });
                                               },

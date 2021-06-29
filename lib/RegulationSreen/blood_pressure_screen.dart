@@ -38,8 +38,6 @@ class ChiSoHuyetAp {
 }
 
 class BloodPressureScreen extends StatefulWidget {
-
-
   const BloodPressureScreen({Key key}) : super(key: key);
 
   @override
@@ -163,190 +161,184 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                     ),
                     child: listChiSoHuyetAp.length == 0
                         ? Container(
-                      padding: EdgeInsets.all(10.0),
-                      alignment: Alignment.center,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width * 0.85,
-                      height: 80,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          buildChiSo(
-                            "Tâm thu",
-                            "--",
-                            "",
-                          ),
-                          buildChiSo(
-                            "Tâm trương",
-                            "--",
-                            "",
-                          ),
-                        ],
-                      ),
-                    )
-                        : Container(
-                      alignment: Alignment.center,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width * 0.85,
-                      height: 200,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceEvenly,
-                            children: [
-                              buildChiSo(
-                                "Tâm thu",
-                                listChiSoHuyetAp.last.tamThu.toString(),
-                                "mmHg",
-                              ),
-                              buildChiSo(
-                                "Tâm trương",
-                                listChiSoHuyetAp.last.tamTruong
-                                    .toString(),
-                                "mmHg",
-                              ),
-                            ],
-                          ),
-                          //TODO: Thông tin Text này dựa trên màn hình
-                          RichText(
-                            text: TextSpan(
-                              children: <TextSpan>[
-                                TextSpan(
-                                  text: "Lần cập nhật gần nhất: ",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black,
-                                  ),
+                            padding: EdgeInsets.all(10.0),
+                            alignment: Alignment.center,
+                            width: MediaQuery.of(context).size.width * 0.85,
+                            height: 80,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                buildChiSo(
+                                  "Tâm thu",
+                                  "--",
+                                  "",
                                 ),
-                                TextSpan(
-                                  text: listChiSoHuyetAp.last.ngayCapNhat
-                                      .toString()
-                                      .substring(0, 10),
-                                  // Chỉ lấy đến ngày
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black,
-                                  ),
+                                buildChiSo(
+                                  "Tâm trương",
+                                  "--",
+                                  "",
                                 ),
                               ],
                             ),
-                          ),
-
-                          MaterialButton(
-                            materialTapTargetSize:
-                            MaterialTapTargetSize.shrinkWrap,
-                            padding: EdgeInsets.zero,
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  String _newTamThu = '';
-                                  String _newTamTruong = '';
-                                  return AlertDialog(
-                                    title: Text('Thay đổi chỉ số'),
-                                    content: Container(
-                                      height: 150,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                        children: [
-                                          SizedBox(height: 8.0),
-                                          Text("Tâm thu"),
-                                          TextField(
-                                            keyboardType:
-                                            TextInputType.number,
-                                            inputFormatters: <
-                                                TextInputFormatter>[
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly
-                                            ],
-                                            autofocus: true,
-                                            onChanged: (value) {
-                                              _newTamThu = value;
-                                            },
-                                          ),
-                                          SizedBox(height: 8.0),
-                                          Text("Tâm trương"),
-                                          TextField(
-                                            keyboardType:
-                                            TextInputType.number,
-                                            inputFormatters: <
-                                                TextInputFormatter>[
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly
-                                            ],
-                                            autofocus: true,
-                                            onChanged: (value) {
-                                              _newTamTruong = value;
-                                            },
-                                          ),
-                                        ],
-                                      ),
+                          )
+                        : Container(
+                            alignment: Alignment.center,
+                            width: MediaQuery.of(context).size.width * 0.85,
+                            height: 200,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    buildChiSo(
+                                      "Tâm thu",
+                                      listChiSoHuyetAp.last.tamThu.toString(),
+                                      "mmHg",
                                     ),
-                                    actions: [
-                                      TextButton(
-                                        child: Text('Hủy'.toUpperCase()),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
+                                    buildChiSo(
+                                      "Tâm trương",
+                                      listChiSoHuyetAp.last.tamTruong
+                                          .toString(),
+                                      "mmHg",
+                                    ),
+                                  ],
+                                ),
+                                //TODO: Thông tin Text này dựa trên màn hình
+                                RichText(
+                                  text: TextSpan(
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: "Lần cập nhật gần nhất: ",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.black,
+                                        ),
                                       ),
-                                      TextButton(
-                                        child: Text(
-                                            'Lưu thay đổi'.toUpperCase()),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                          FirebaseFirestore.instance
-                                              .collection(
-                                              'blood_pressure')
-                                              .doc(listChiSoHuyetAp
-                                              .last.id)
-                                              .update({
-                                            "tamThu":
-                                            int.parse(_newTamThu),
-                                            "tamTruong":
-                                            int.parse(_newTamTruong),
-                                            "timestamp": DateTime.now(),
-                                          });
-                                        },
+                                      TextSpan(
+                                        text: listChiSoHuyetAp.last.ngayCapNhat
+                                            .toString()
+                                            .substring(0, 10),
+                                        // Chỉ lấy đến ngày
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.black,
+                                        ),
                                       ),
                                     ],
-                                  );
-                                },
-                              );
-                            },
-                            child: Container(
-                              height: 50.0,
-                              width: 240.0,
-                              decoration: BoxDecoration(
-                                color: Colors.indigo[100],
-                                shape: BoxShape.rectangle,
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(25),
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "Cập nhật chỉ số",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 17.0,
-                                    color: lavender,
                                   ),
                                 ),
-                              ),
+
+                                MaterialButton(
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  padding: EdgeInsets.zero,
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        String _newTamThu = '';
+                                        String _newTamTruong = '';
+                                        return AlertDialog(
+                                          title: Text('Thay đổi chỉ số'),
+                                          content: Container(
+                                            height: 150,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                SizedBox(height: 8.0),
+                                                Text("Tâm thu"),
+                                                TextField(
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  inputFormatters: <
+                                                      TextInputFormatter>[
+                                                    FilteringTextInputFormatter
+                                                        .digitsOnly
+                                                  ],
+                                                  autofocus: true,
+                                                  onChanged: (value) {
+                                                    _newTamThu = value;
+                                                  },
+                                                ),
+                                                SizedBox(height: 8.0),
+                                                Text("Tâm trương"),
+                                                TextField(
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  inputFormatters: <
+                                                      TextInputFormatter>[
+                                                    FilteringTextInputFormatter
+                                                        .digitsOnly
+                                                  ],
+                                                  autofocus: true,
+                                                  onChanged: (value) {
+                                                    _newTamTruong = value;
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              child: Text('Hủy'.toUpperCase()),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                            TextButton(
+                                              child: Text(
+                                                  'Lưu thay đổi'.toUpperCase()),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                FirebaseFirestore.instance
+                                                    .collection(
+                                                        'blood_pressure')
+                                                    .doc(listChiSoHuyetAp
+                                                        .last.id)
+                                                    .update({
+                                                  "tamThu":
+                                                      int.parse(_newTamThu),
+                                                  "tamTruong":
+                                                      int.parse(_newTamTruong),
+                                                  "timestamp": DateTime.now(),
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Container(
+                                    height: 50.0,
+                                    width: 240.0,
+                                    decoration: BoxDecoration(
+                                      color: Colors.indigo[100],
+                                      shape: BoxShape.rectangle,
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(25),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Cập nhật chỉ số",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 17.0,
+                                          color: lavender,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
                             ),
-                          )
-                        ],
-                      ),
-                    ),
+                          ),
                   ),
                 ),
                 SizedBox(height: defaultPadding),
@@ -384,8 +376,9 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                       ],
                       markerPointers: [
                         LinearShapePointer(
-                          value: listChiSoHuyetAp.length == 0 ? 70.0 : listChiSoHuyetAp.last.tamThu
-                              .toDouble(),
+                          value: listChiSoHuyetAp.length == 0
+                              ? 70.0
+                              : listChiSoHuyetAp.last.tamThu.toDouble(),
                         ),
                       ],
                     ),
@@ -426,8 +419,9 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                       ],
                       markerPointers: [
                         LinearShapePointer(
-                          value: listChiSoHuyetAp.length == 0 ? 50.0:listChiSoHuyetAp.last.tamTruong
-                              .toDouble(),
+                          value: listChiSoHuyetAp.length == 0
+                              ? 50.0
+                              : listChiSoHuyetAp.last.tamTruong.toDouble(),
                         ),
                       ],
                     ),
@@ -438,15 +432,12 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                   child: listChiSoHuyetAp.length == 0
                       ? Container()
                       : buildLoiKhuyen(context, listChiSoHuyetAp.last.tamThu,
-                      listChiSoHuyetAp.last.tamTruong),
+                          listChiSoHuyetAp.last.tamTruong),
                 ),
                 SizedBox(height: defaultPadding),
                 Center(
                   child: Container(
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width * 0.85,
+                    width: MediaQuery.of(context).size.width * 0.85,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -480,100 +471,100 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                         ),
                         listChiSoHuyetAp.length == 0
                             ? Container(
-                          height: 50,
-                          padding: EdgeInsets.symmetric(
-                            vertical: 4.0,
-                            horizontal: 16.0,
-                          ),
-                          margin: EdgeInsets.symmetric(vertical: 4.0),
-                          decoration: BoxDecoration(
-                            color: Colors.indigo[50],
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(8.0),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("--------",
-                                  style: TextStyle(fontSize: 20)),
-                              Text("--------",
-                                  style: TextStyle(fontSize: 20)),
-                            ],
-                          ),
-                        )
-                            : ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: listChiSoHuyetAp.length > 3
-                              ? 3
-                              : listChiSoHuyetAp.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              height: 50,
-                              padding: EdgeInsets.symmetric(
-                                vertical: 4.0,
-                                horizontal: 16.0,
-                              ),
-                              margin: EdgeInsets.symmetric(vertical: 4.0),
-                              decoration: BoxDecoration(
-                                color: Colors.indigo[50],
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(8.0),
+                                height: 50,
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 4.0,
+                                  horizontal: 16.0,
                                 ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
-                                children: listChiSoHuyetAp.length >= 3
-                                    ? [
-                                  Text(
-                                    listChiSoHuyetAp[
-                                    listChiSoHuyetAp
-                                        .length -
-                                        3 +
-                                        index]
-                                        .tamThu
-                                        .toString() +
-                                        "/" +
-                                        listChiSoHuyetAp[
-                                        listChiSoHuyetAp
-                                            .length -
-                                            3 +
-                                            index]
-                                            .tamTruong
-                                            .toString(),
+                                margin: EdgeInsets.symmetric(vertical: 4.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.indigo[50],
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(8.0),
                                   ),
-                                  Text(listChiSoHuyetAp[
-                                  listChiSoHuyetAp.length -
-                                      3 +
-                                      index]
-                                      .ngayCapNhat
-                                      .toUtc()
-                                      .toString()
-                                      .substring(0, 10))
-                                ]
-                                    : [
-                                  Text(
-                                    listChiSoHuyetAp[index]
-                                        .tamThu
-                                        .toString() +
-                                        "/" +
-                                        listChiSoHuyetAp[index]
-                                            .tamTruong
-                                            .toString(),
-                                  ),
-                                  Text(listChiSoHuyetAp[index]
-                                      .ngayCapNhat
-                                      .toUtc()
-                                      .toString()
-                                      .substring(0, 10))
-                                ],
-                              ),
-                            );
-                          },
-                        ) //TODO: change to StreamBuilder later ?
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("--------",
+                                        style: TextStyle(fontSize: 20)),
+                                    Text("--------",
+                                        style: TextStyle(fontSize: 20)),
+                                  ],
+                                ),
+                              )
+                            : ListView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: listChiSoHuyetAp.length > 3
+                                    ? 3
+                                    : listChiSoHuyetAp.length,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    height: 50,
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 4.0,
+                                      horizontal: 16.0,
+                                    ),
+                                    margin: EdgeInsets.symmetric(vertical: 4.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.indigo[50],
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(8.0),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: listChiSoHuyetAp.length >= 3
+                                          ? [
+                                              Text(
+                                                listChiSoHuyetAp[
+                                                            listChiSoHuyetAp
+                                                                    .length -
+                                                                3 +
+                                                                index]
+                                                        .tamThu
+                                                        .toString() +
+                                                    "/" +
+                                                    listChiSoHuyetAp[
+                                                            listChiSoHuyetAp
+                                                                    .length -
+                                                                3 +
+                                                                index]
+                                                        .tamTruong
+                                                        .toString(),
+                                              ),
+                                              Text(listChiSoHuyetAp[
+                                                      listChiSoHuyetAp.length -
+                                                          3 +
+                                                          index]
+                                                  .ngayCapNhat
+                                                  .toUtc()
+                                                  .toString()
+                                                  .substring(0, 10))
+                                            ]
+                                          : [
+                                              Text(
+                                                listChiSoHuyetAp[index]
+                                                        .tamThu
+                                                        .toString() +
+                                                    "/" +
+                                                    listChiSoHuyetAp[index]
+                                                        .tamTruong
+                                                        .toString(),
+                                              ),
+                                              Text(listChiSoHuyetAp[index]
+                                                  .ngayCapNhat
+                                                  .toUtc()
+                                                  .toString()
+                                                  .substring(0, 10))
+                                            ],
+                                    ),
+                                  );
+                                },
+                              ) //TODO: change to StreamBuilder later ?
                       ],
                     ),
                   ),
@@ -641,10 +632,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
       ),
       padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
       alignment: Alignment.center,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width * 0.85,
+      width: MediaQuery.of(context).size.width * 0.85,
       child: Column(
         children: [
           Text(
@@ -713,11 +701,10 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
         .orderBy('timestamp')
         .where('ownerId', isEqualTo: currentUser.id)
         .snapshots();
-    return snapshots.map((snapshot) =>
-        snapshot.docs
-            .map(
-              (snapshot) => ChiSoHuyetAp.fromMap(snapshot.data()),
+    return snapshots.map((snapshot) => snapshot.docs
+        .map(
+          (snapshot) => ChiSoHuyetAp.fromMap(snapshot.data()),
         )
-            .toList());
+        .toList());
   }
 }

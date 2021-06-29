@@ -29,15 +29,16 @@ List demoList = [
 class MainScreen extends StatelessWidget {
   const MainScreen({Key key, @required this.auth}) : super(key: key);
   final AuthBase auth;
+
   String buildLoiChao() {
     DateTime time = new DateTime.now();
     if (time.hour > 6 && time.hour <= 11) {
       return "Chào buổi sáng";
     }
-    if (time.hour > 11 && time.hour <= 14){
+    if (time.hour > 11 && time.hour <= 14) {
       return "Chào buổi trưa";
     }
-    if (time.hour > 14 && time.hour <= 18){
+    if (time.hour > 14 && time.hour <= 18) {
       return "Chào buổi chiều";
     }
     return "Chào buổi tối";
@@ -85,7 +86,8 @@ class MainScreen extends StatelessWidget {
           );
           break;
         }
-      default: break;
+      default:
+        break;
     }
   }
 
@@ -95,8 +97,9 @@ class MainScreen extends StatelessWidget {
     } catch (e) {
       print(e.toString());
     }
+    currentUser = null;
   }
-  //TODO: sửa tên người dùng + thời gian
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,11 +123,11 @@ class MainScreen extends StatelessWidget {
               buildLoiChao(),
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
-            (currentUser != null) ?
-            Text(currentUser.name,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))
-            : Text(" ",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))
+            (currentUser != null)
+                ? Text(currentUser.name,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))
+                : Text(" ",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))
           ],
         ),
         actions: <Widget>[
