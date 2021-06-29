@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:health_care/MainScreen/profile.dart';
 
 import 'package:health_care/RegulationSreen/blood_pressure_screen.dart';
+import 'package:health_care/RegulationSreen/blood_sugar_screen.dart';
+import 'package:health_care/RegulationSreen/heart_rate.dart';
 import 'package:health_care/RegulationSreen/water_screen.dart';
 
 import 'package:health_care/constants.dart';
@@ -17,11 +19,10 @@ class HeathFunctionClassInfo {
 }
 
 List demoList = [
-  HeathFunctionClassInfo("Kiểm tra nhịp tim", "assets/images/camera.png"),
   HeathFunctionClassInfo("Huyết áp", null),
+  HeathFunctionClassInfo("Nhu cầu nước", null),
+  HeathFunctionClassInfo("Kiểm tra nhịp tim", "assets/images/camera.png"),
   HeathFunctionClassInfo("Đường huyết", null),
-  HeathFunctionClassInfo("Nồng độ cồn", null),
-  HeathFunctionClassInfo("Nồng độ cồn", null),
 ];
 
 class MainScreen extends StatelessWidget {
@@ -174,8 +175,8 @@ class MainScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => WaterConsumptionScreen(),
-                          ),
+                            builder: (context) => BloodSugarScreen()),
+
                         );
                       },
                       child: Container(
