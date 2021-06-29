@@ -120,8 +120,11 @@ class MainScreen extends StatelessWidget {
               buildLoiChao(),
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
+            (currentUser != null) ?
             Text(currentUser.name,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))
+            : Text(" ",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))
           ],
         ),
         actions: <Widget>[

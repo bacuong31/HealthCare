@@ -266,8 +266,7 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
                                                   "canNang":
                                                       int.parse(_newCanNang),
                                                   "luongNuoc":
-                                                      int.parse(_newCanNang) /
-                                                          10,
+                                                      int.parse(_newCanNang) * 31,
                                                   "timestamp": DateTime.now(),
                                                 });
                                               },
@@ -565,6 +564,7 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
   }
 
   Stream<List<ChiSoNuoc>> _getChiSoNuoc() {
+    print("iddddddd" + currentUser.id);
     final snapshots = FirebaseFirestore.instance
         .collection('water')
         .orderBy('timestamp')
