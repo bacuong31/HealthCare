@@ -8,6 +8,7 @@ import 'package:health_care/RegulationSreen/heart_rate.dart';
 import 'package:health_care/RegulationSreen/water_screen.dart';
 
 import 'package:health_care/constants.dart';
+import 'package:health_care/main.dart';
 import 'package:health_care/service/auth.dart';
 import 'package:health_care/sign_in/sign_in_screen.dart';
 import 'DataSearch.dart';
@@ -28,6 +29,19 @@ List demoList = [
 class MainScreen extends StatelessWidget {
   const MainScreen({Key key, @required this.auth}) : super(key: key);
   final AuthBase auth;
+  String buildLoiChao() {
+    DateTime time = new DateTime.now();
+    if (time.hour > 6 && time.hour <= 11) {
+      return "Chào buổi sáng";
+    }
+    if (time.hour > 11 && time.hour <= 14){
+      return "Chào buổi trưa";
+    }
+    if (time.hour > 14 && time.hour <= 18){
+      return "Chào buổi chiều";
+    }
+    return "Chào buổi tối";
+  }
 
   void buildScreen(int index, BuildContext context) {
     switch (demoList[index].Name) {
@@ -59,7 +73,6 @@ class MainScreen extends StatelessWidget {
               builder: (context) => HeartRateScreen(),
             ),
           );
-          print("huyet ap");
           break;
         }
       case "Đường huyết":
@@ -67,12 +80,12 @@ class MainScreen extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => BloodSugarScreen(),
-          ),
-    );
-    break;
-    }
-    default: break;
+              builder: (context) => BloodSugarScreen(),
+            ),
+          );
+          break;
+        }
+      default: break;
     }
   }
 
@@ -83,7 +96,6 @@ class MainScreen extends StatelessWidget {
       print(e.toString());
     }
   }
-
   //TODO: sửa tên người dùng + thời gian
   @override
   Widget build(BuildContext context) {
@@ -105,10 +117,10 @@ class MainScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              "Chào buổi tối",
+              buildLoiChao(),
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
-            Text("Trương Bá Cường",
+            Text(currentUser.name,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ],
         ),
@@ -140,10 +152,7 @@ class MainScreen extends StatelessWidget {
                 primary: Colors.white,
                 backgroundColor: Colors.indigo[300],
                 minimumSize:
-                Size(MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.8, 26.0),
+                    Size(MediaQuery.of(context).size.width * 0.8, 26.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.0),
                 ),
@@ -209,50 +218,49 @@ class MainScreen extends StatelessWidget {
               padding: EdgeInsets.all(4.0),
               itemCount: demoList.length,
               scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) =>
-                  Container(
-                    margin: EdgeInsets.all(4.0),
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        MaterialButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            buildScreen(index, context);
-                          },
-                          child: Container(
-                            height: 120.0,
-                            width: 200.0,
-                            decoration: BoxDecoration(
-                              image: null,
-                              //fix later
-                              color: Colors.white,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(10),
-                              ),
-                            ),
+              itemBuilder: (context, index) => Container(
+                margin: EdgeInsets.all(4.0),
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    MaterialButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        buildScreen(index, context);
+                      },
+                      child: Container(
+                        height: 120.0,
+                        width: 200.0,
+                        decoration: BoxDecoration(
+                          image: null,
+                          //fix later
+                          color: Colors.white,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 5.0, top: 5.0),
-                          child: Text(
-                            demoList[index].Name,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Colors.black),
-                            textAlign: TextAlign.start,
-                          ),
-                        )
-                      ],
+                      ),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 5.0, top: 5.0),
+                      child: Text(
+                        demoList[index].Name,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black),
+                        textAlign: TextAlign.start,
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ),
           ),
         ],

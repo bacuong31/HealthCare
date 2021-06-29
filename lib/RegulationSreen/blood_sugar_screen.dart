@@ -6,9 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:health_care/constants.dart';
 
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../main.dart';
-
-import '../LocalNotifyManager.dart';
 
 class ChiSoDuongHuyet {
   final int duongHuyet;
@@ -46,18 +45,6 @@ class BloodSugarScreen extends StatefulWidget {
 }
 
 class _BloodSugarScreenState extends State<BloodSugarScreen> {
-  @override initState() {
-    super.initState();
-    localNotifyManager.setOnNotificationReceive(onNotificationReceive);
-    localNotifyManager.setOnNotificationClick(onNotificationClick);
-  }
-  onNotificationReceive(ReceiveNotification notification) {
-    print("Notification: ${notification.id}");
-  }
-  onNotificationClick(String payload){
-    print('Payload $payload');
-  }
-
   List<ChiSoDuongHuyet> listChiSoDuongHuyet = [];
 
   List<String> loiKhuyen = [
@@ -71,9 +58,95 @@ class _BloodSugarScreenState extends State<BloodSugarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await localNotifyManager.showNotification();
-
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              String _newDuongHuyet = '';
+              String _trangThai = "No";
+              return StatefulBuilder(
+                builder: (context, setState) {
+                  return AlertDialog(
+                    title: Text('Thêm chỉ số'),
+                    content: Container(
+                      height: 250,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Đường huyết"),
+                          TextField(
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            autofocus: true,
+                            onChanged: (value) {
+                              _newDuongHuyet = value;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          Text("Trạng thái"),
+                          Column(
+                            children: <Widget>[
+                              RadioListTile<String>(
+                                  title: Text("No"),
+                                  value: "No",
+                                  groupValue: _trangThai,
+                                  onChanged: (String value) {
+                                    setState(() {
+                                      print("no");
+                                      _trangThai = value;
+                                    });
+                                  }),
+                              RadioListTile<String>(
+                                  title: Text("Đói"),
+                                  value: "Đói",
+                                  groupValue: _trangThai,
+                                  onChanged: (String value) {
+                                    setState(() {
+                                      print("đói");
+                                      _trangThai = value;
+                                    });
+                                  }),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: Text('Hủy'.toUpperCase()),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Thêm chỉ số'.toUpperCase()),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          if (_newDuongHuyet == "") {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                "Thất bại, bạn cần nhập chỉ số đường huyết",
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                              duration: Duration(seconds: 2),
+                            ));
+                          } else {
+                            postToFireStore(
+                              duongHuyet: int.parse(_newDuongHuyet),
+                              trangThai: _trangThai,
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          );
         },
         tooltip: 'Thêm chỉ số',
         child: Icon(Icons.add, size: 35.0),
@@ -81,7 +154,7 @@ class _BloodSugarScreenState extends State<BloodSugarScreen> {
       appBar: AppBar(
         title: Transform(
             transform: Matrix4.translationValues(-28, 0.0, 0.0),
-            child: Center(child: Text("Đường huyết"))),
+            child: Center(child: Text("Trạng thái"))),
       ),
       body: StreamBuilder<List<ChiSoDuongHuyet>>(
           stream: _getChiSoDuongHuyet(),
@@ -185,92 +258,95 @@ class _BloodSugarScreenState extends State<BloodSugarScreen> {
                                         String _newDuongHuyet = '';
                                         String _trangThai = "No";
                                         return StatefulBuilder(
-                                            builder: (context, setState) {
-                                          return AlertDialog(
-                                            title: Text('Thay đổi chỉ số'),
-                                            content: Container(
-                                              height: 190,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(height: 8.0),
-                                                  Text("Đường huyết"),
-                                                  TextField(
-                                                    keyboardType:
-                                                        TextInputType.number,
-                                                    inputFormatters: <
-                                                        TextInputFormatter>[
-                                                      FilteringTextInputFormatter
-                                                          .digitsOnly
-                                                    ],
-                                                    autofocus: true,
-                                                    onChanged: (value) {
-                                                      _newDuongHuyet = value;
-                                                    },
-                                                  ),
-                                                  Column(
-                                                    children: <Widget>[
-                                                      RadioListTile<String>(
-                                                          title: Text("No"),
-                                                          value: "No",
-                                                          groupValue:
-                                                              _trangThai,
-                                                          onChanged:
-                                                              (String value) {
-                                                            setState(() {
-                                                              print("no");
-                                                              _trangThai =
-                                                                  value;
-                                                            });
-                                                          }),
-                                                      RadioListTile<String>(
-                                                          title: Text("Đói"),
-                                                          value: "Đói",
-                                                          groupValue:
-                                                              _trangThai,
-                                                          onChanged:
-                                                              (String value) {
-                                                            setState(() {
-                                                              _trangThai =
-                                                                  value;
-                                                            });
-                                                          }),
-                                                    ],
-                                                  ),
-                                                ],
+                                          builder: (context, setState) {
+                                            return AlertDialog(
+                                              title: Text('Thay đổi chỉ số'),
+                                              content: Container(
+                                                height: 190,
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    SizedBox(height: 8.0),
+                                                    Text("Đường huyết"),
+                                                    TextField(
+                                                      keyboardType:
+                                                          TextInputType.number,
+                                                      inputFormatters: <
+                                                          TextInputFormatter>[
+                                                        FilteringTextInputFormatter
+                                                            .digitsOnly
+                                                      ],
+                                                      autofocus: true,
+                                                      onChanged: (value) {
+                                                        _newDuongHuyet = value;
+                                                      },
+                                                    ),
+                                                    Column(
+                                                      children: <Widget>[
+                                                        RadioListTile<String>(
+                                                            title: Text("No"),
+                                                            value: "No",
+                                                            groupValue:
+                                                                _trangThai,
+                                                            onChanged:
+                                                                (String value) {
+                                                              setState(() {
+                                                                print("no");
+                                                                _trangThai =
+                                                                    value;
+                                                              });
+                                                            }),
+                                                        RadioListTile<String>(
+                                                            title: Text("Đói"),
+                                                            value: "Đói",
+                                                            groupValue:
+                                                                _trangThai,
+                                                            onChanged:
+                                                                (String value) {
+                                                              setState(() {
+                                                                _trangThai =
+                                                                    value;
+                                                              });
+                                                            }),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                child:
-                                                    Text('Hủy'.toUpperCase()),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                              ),
-                                              TextButton(
-                                                child: Text('Lưu thay đổi'
-                                                    .toUpperCase()),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                  FirebaseFirestore.instance
-                                                      .collection('blood_sugar')
-                                                      .doc(listChiSoDuongHuyet
-                                                          .last.id)
-                                                      .update({
-                                                    "duongHuyet": int.parse(
-                                                        _newDuongHuyet),
-                                                    "trangThai": _trangThai,
-                                                    "timestamp": DateTime.now(),
-                                                  });
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        },);
+                                              actions: [
+                                                TextButton(
+                                                  child:
+                                                      Text('Hủy'.toUpperCase()),
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: Text('Lưu thay đổi'
+                                                      .toUpperCase()),
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    FirebaseFirestore.instance
+                                                        .collection(
+                                                            'blood_sugar')
+                                                        .doc(listChiSoDuongHuyet
+                                                            .last.id)
+                                                        .update({
+                                                      "duongHuyet": int.parse(
+                                                          _newDuongHuyet),
+                                                      "trangThai": _trangThai,
+                                                      "timestamp":
+                                                          DateTime.now(),
+                                                    });
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
                                       },
                                     );
                                   },
@@ -298,6 +374,73 @@ class _BloodSugarScreenState extends State<BloodSugarScreen> {
                                 )
                               ],
                             ),
+                          ),
+                  ),
+                ),
+                SizedBox(height: defaultPadding),
+                Center(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.85,
+                    child: listChiSoDuongHuyet.last.trangThai == "No"
+                        ? SfLinearGauge(
+                            useRangeColorForAxis: true,
+                            animateAxis: true,
+                            axisTrackStyle: LinearAxisTrackStyle(thickness: 1),
+                            minimum: 0.0,
+                            maximum: 300.0,
+                            ranges: <LinearGaugeRange>[
+                              LinearGaugeRange(
+                                  startValue: 0,
+                                  endValue: 140,
+                                  position: LinearElementPosition.outside,
+                                  color: Color(0xff0DC9AB)),
+                              LinearGaugeRange(
+                                  startValue: 140,
+                                  endValue: 200,
+                                  position: LinearElementPosition.outside,
+                                  color: Color(0xffFFC93E)),
+                              LinearGaugeRange(
+                                  startValue: 200,
+                                  endValue: 300,
+                                  position: LinearElementPosition.outside,
+                                  color: Color(0xffF45656)),
+                            ],
+                            markerPointers: [
+                              LinearShapePointer(
+                                value: listChiSoDuongHuyet.last.duongHuyet
+                                    .toDouble(),
+                              ),
+                            ],
+                          )
+                        : SfLinearGauge(
+                            useRangeColorForAxis: true,
+                            animateAxis: true,
+                            axisTrackStyle: LinearAxisTrackStyle(thickness: 1),
+                            minimum: 0.0,
+                            maximum: 200.0,
+                            ranges: <LinearGaugeRange>[
+                              LinearGaugeRange(
+                                  startValue: 0,
+                                  endValue: 100,
+                                  position: LinearElementPosition.outside,
+                                  color: Color(0xff0DC9AB)),
+                              LinearGaugeRange(
+                                  startValue: 100,
+                                  endValue: 125,
+                                  position: LinearElementPosition.outside,
+                                  color: Color(0xffFFC93E)),
+                              LinearGaugeRange(
+                                  startValue: 125,
+                                  endValue: 200,
+                                  position: LinearElementPosition.outside,
+                                  color: Color(0xffF45656)),
+                            ],
+                            markerPointers: [
+                              LinearShapePointer(
+                                value: listChiSoDuongHuyet.last.duongHuyet
+                                    .toDouble(),
+                              ),
+                            ],
                           ),
                   ),
                 ),
