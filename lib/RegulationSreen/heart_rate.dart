@@ -42,7 +42,10 @@ class HeartRateScreen extends StatefulWidget {
 class _HeartRateScreenState extends State<HeartRateScreen> {
   List<ChiSoNhipTim> listChiSoNhipTim = [];
 
-  List<String> loiKhuyen = [];
+  List<String> loiKhuyen = [
+    "Nhịp tim của bạn đang ở mức bình thường.",
+    "Nhịp tim của bạn nhanh hơn bình thường. Bạn đang có dấu hiệu bệnh lý về tim mạch. Hãy đến gặp bác sĩ để tìm hiểu thêm."
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -245,7 +248,7 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
                                               onPressed: () {
                                                 Navigator.pop(context);
                                                 FirebaseFirestore.instance
-                                                    .collection('water')
+                                                    .collection('heart_rate')
                                                     .doc(listChiSoNhipTim
                                                         .last.id)
                                                     .update({
@@ -446,10 +449,16 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
     );
   }
 
-  Container buildLoiKhuyen(BuildContext context, int _canNang) {
+  Container buildLoiKhuyen(BuildContext context, int _nhipTim) {
     Color selectionColor = Colors.green[200];
-    String suggestion = "Yuul B.Alwright";
-
+    String suggestion = "";
+    if (_nhipTim <= 100){
+      suggestion = loiKhuyen[0];
+      selectionColor = normalState;
+    } else if (_nhipTim > 100){
+      suggestion = loiKhuyen[1];
+      selectionColor = dangerousState;
+    }
     return Container(
       decoration: BoxDecoration(
         color: selectionColor,
@@ -465,7 +474,7 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
           Text(
             suggestion,
             style: TextStyle(
-              color: Colors.black,
+              color: Colors.white,
               fontSize: 19.0,
             ),
           ),

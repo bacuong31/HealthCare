@@ -471,9 +471,7 @@ class _ProfileState extends State<Profile> {
   }
 
   applyChanges() async {
-    //print("[current photo url] " + currentUserModel.photoUrl);
 
-    //print("[Ten] " + nameController.text);
     if (file != null) {
       if (currentUser.photoUrl != "") {
         Reference ref =
