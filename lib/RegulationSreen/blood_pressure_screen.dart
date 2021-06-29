@@ -384,7 +384,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                       ],
                       markerPointers: [
                         LinearShapePointer(
-                          value: listChiSoHuyetAp.last.tamThu
+                          value: listChiSoHuyetAp.length == 0 ? 70.0 : listChiSoHuyetAp.last.tamThu
                               .toDouble(),
                         ),
                       ],
@@ -426,7 +426,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                       ],
                       markerPointers: [
                         LinearShapePointer(
-                          value: listChiSoHuyetAp.last.tamTruong
+                          value: listChiSoHuyetAp.length == 0 ? 50.0:listChiSoHuyetAp.last.tamTruong
                               .toDouble(),
                         ),
                       ],

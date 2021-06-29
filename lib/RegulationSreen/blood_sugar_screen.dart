@@ -381,7 +381,35 @@ class _BloodSugarScreenState extends State<BloodSugarScreen> {
                 Center(
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.85,
-                    child: listChiSoDuongHuyet.last.trangThai == "No"
+                    child: listChiSoDuongHuyet.length == 0 ? SfLinearGauge(
+                      useRangeColorForAxis: true,
+                      animateAxis: true,
+                      axisTrackStyle: LinearAxisTrackStyle(thickness: 1),
+                      minimum: 0.0,
+                      maximum: 300.0,
+                      ranges: <LinearGaugeRange>[
+                        LinearGaugeRange(
+                            startValue: 0,
+                            endValue: 140,
+                            position: LinearElementPosition.outside,
+                            color: Color(0xff0DC9AB)),
+                        LinearGaugeRange(
+                            startValue: 140,
+                            endValue: 200,
+                            position: LinearElementPosition.outside,
+                            color: Color(0xffFFC93E)),
+                        LinearGaugeRange(
+                            startValue: 200,
+                            endValue: 300,
+                            position: LinearElementPosition.outside,
+                            color: Color(0xffF45656)),
+                      ],
+                      markerPointers: [
+                        LinearShapePointer(
+                          value: 140,
+                        ),
+                      ],
+                    ) :listChiSoDuongHuyet.last.trangThai == "No"
                         ? SfLinearGauge(
                             useRangeColorForAxis: true,
                             animateAxis: true,
