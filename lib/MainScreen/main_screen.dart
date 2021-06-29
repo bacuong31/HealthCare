@@ -29,6 +29,53 @@ class MainScreen extends StatelessWidget {
   const MainScreen({Key key, @required this.auth}) : super(key: key);
   final AuthBase auth;
 
+  void buildScreen(int index, BuildContext context) {
+    switch (demoList[index].Name) {
+      case "Huyết áp":
+        {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BloodPressureScreen(),
+            ),
+          );
+          break;
+        }
+      case "Nhu cầu nước":
+        {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WaterConsumptionScreen(),
+            ),
+          );
+          break;
+        }
+      case "Kiểm tra nhịp tim":
+        {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HeartRateScreen(),
+            ),
+          );
+          print("huyet ap");
+          break;
+        }
+      case "Đường huyết":
+        {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BloodSugarScreen(),
+          ),
+    );
+    break;
+    }
+    default: break;
+    }
+  }
+
   Future<void> _signOut() async {
     try {
       await auth.signOut();
@@ -36,6 +83,7 @@ class MainScreen extends StatelessWidget {
       print(e.toString());
     }
   }
+
   //TODO: sửa tên người dùng + thời gian
   @override
   Widget build(BuildContext context) {
@@ -92,7 +140,10 @@ class MainScreen extends StatelessWidget {
                 primary: Colors.white,
                 backgroundColor: Colors.indigo[300],
                 minimumSize:
-                    Size(MediaQuery.of(context).size.width * 0.8, 26.0),
+                Size(MediaQuery
+                    .of(context)
+                    .size
+                    .width * 0.8, 26.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.0),
                 ),
@@ -158,54 +209,50 @@ class MainScreen extends StatelessWidget {
               padding: EdgeInsets.all(4.0),
               itemCount: demoList.length,
               scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => Container(
-                margin: EdgeInsets.all(4.0),
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    MaterialButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BloodSugarScreen()),
-
-                        );
-                      },
-                      child: Container(
-                        height: 120.0,
-                        width: 200.0,
-                        decoration: BoxDecoration(
-                          image: null,
-                          //fix later
-                          color: Colors.white,
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
+              itemBuilder: (context, index) =>
+                  Container(
+                    margin: EdgeInsets.all(4.0),
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 5.0, top: 5.0),
-                      child: Text(
-                        demoList[index].Name,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.black),
-                        textAlign: TextAlign.start,
-                      ),
-                    )
-                  ],
-                ),
-              ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        MaterialButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            buildScreen(index, context);
+                          },
+                          child: Container(
+                            height: 120.0,
+                            width: 200.0,
+                            decoration: BoxDecoration(
+                              image: null,
+                              //fix later
+                              color: Colors.white,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 5.0, top: 5.0),
+                          child: Text(
+                            demoList[index].Name,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.black),
+                            textAlign: TextAlign.start,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
             ),
           ),
         ],

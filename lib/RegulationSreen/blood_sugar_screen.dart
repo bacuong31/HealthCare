@@ -8,6 +8,8 @@ import 'package:health_care/constants.dart';
 
 import '../main.dart';
 
+import '../LocalNotifyManager.dart';
+
 class ChiSoDuongHuyet {
   final int duongHuyet;
   final String trangThai;
@@ -44,6 +46,18 @@ class BloodSugarScreen extends StatefulWidget {
 }
 
 class _BloodSugarScreenState extends State<BloodSugarScreen> {
+  @override initState() {
+    super.initState();
+    localNotifyManager.setOnNotificationReceive(onNotificationReceive);
+    localNotifyManager.setOnNotificationClick(onNotificationClick);
+  }
+  onNotificationReceive(ReceiveNotification notification) {
+    print("Notification: ${notification.id}");
+  }
+  onNotificationClick(String payload){
+    print('Payload $payload');
+  }
+
   List<ChiSoDuongHuyet> listChiSoDuongHuyet = [];
 
   List<String> loiKhuyen = [
@@ -57,95 +71,9 @@ class _BloodSugarScreenState extends State<BloodSugarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              String _newDuongHuyet = '';
-              String _trangThai = "No";
-              return StatefulBuilder(
-                builder: (context, setState) {
-                  return AlertDialog(
-                    title: Text('Thêm chỉ số'),
-                    content: Container(
-                      height: 250,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Đường huyết"),
-                          TextField(
-                            keyboardType: TextInputType.number,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            autofocus: true,
-                            onChanged: (value) {
-                              _newDuongHuyet = value;
-                            },
-                          ),
-                          SizedBox(height: 16.0),
-                          Text("Trạng thái"),
-                          Column(
-                            children: <Widget>[
-                              RadioListTile<String>(
-                                  title: Text("No"),
-                                  value: "No",
-                                  groupValue: _trangThai,
-                                  onChanged: (String value) {
-                                    setState(() {
-                                      print("no");
-                                      _trangThai = value;
-                                    });
-                                  }),
-                              RadioListTile<String>(
-                                  title: Text("Đói"),
-                                  value: "Đói",
-                                  groupValue: _trangThai,
-                                  onChanged: (String value) {
-                                    setState(() {
-                                      print("đói");
-                                      _trangThai = value;
-                                    });
-                                  }),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        child: Text('Hủy'.toUpperCase()),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                      TextButton(
-                        child: Text('Thêm chỉ số'.toUpperCase()),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          if (_newDuongHuyet == "") {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(
-                                "Thất bại, bạn cần nhập chỉ số đường huyết",
-                                style: TextStyle(fontSize: 16.0),
-                              ),
-                              duration: Duration(seconds: 2),
-                            ));
-                          } else {
-                            postToFireStore(
-                              duongHuyet: int.parse(_newDuongHuyet),
-                              trangThai: _trangThai,
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-          );
+        onPressed: () async {
+          await localNotifyManager.showNotification();
+
         },
         tooltip: 'Thêm chỉ số',
         child: Icon(Icons.add, size: 35.0),
@@ -153,7 +81,7 @@ class _BloodSugarScreenState extends State<BloodSugarScreen> {
       appBar: AppBar(
         title: Transform(
             transform: Matrix4.translationValues(-28, 0.0, 0.0),
-            child: Center(child: Text("Trạng thái"))),
+            child: Center(child: Text("Đường huyết"))),
       ),
       body: StreamBuilder<List<ChiSoDuongHuyet>>(
           stream: _getChiSoDuongHuyet(),
