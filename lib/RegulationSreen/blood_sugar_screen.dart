@@ -8,6 +8,20 @@ import 'package:health_care/constants.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../main.dart';
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
+
+void initializeSetting() async {
+  var initAndroid = AndroidInitializationSettings('app_notification_icon');
+  var initSetting = InitializationSettings(android: initAndroid);
+  flutterLocalNotificationsPlugin.initialize(initSetting);
+}
+
+
 class ChiSoDuongHuyet {
   final int duongHuyet;
   final String trangThai;
@@ -52,6 +66,45 @@ class _BloodSugarScreenState extends State<BloodSugarScreen> {
     "Bạn đang có dấu hiệu của bệnh tiểu đường. Ứng dụng khuyên bạn nên đến phòng khám uy tín gần nhất",
     "Bạn đang bị bệnh tiểu đường. Ứng dụng khuyên bạn nên đến phòng khám uy tín gần nhất",
   ];
+
+
+  @override
+  void initState() {
+    initializeSetting();
+    tz.initializeTimeZones();
+    super.initState();
+  }
+
+  Future<void> displayNotification() async {
+    print("Notification is sent");
+    flutterLocalNotificationsPlugin.cancel(1);
+    Duration duration;
+    if (selectionColor == normalState) {
+      duration = new Duration(days: 14);
+    }
+    if (selectionColor == warningState) {
+      duration = new Duration(days: 3);
+    }
+    if (selectionColor == dangerousState) {
+      duration = new Duration(seconds: 3);
+    }
+    flutterLocalNotificationsPlugin.zonedSchedule(
+      1,
+      "Nhắc nhở",
+      "Đây là thông báo nhắc nhở đo chỉ số đường huyết",
+      tz.TZDateTime.now(tz.local).add(duration),
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'channel id',
+          'channel name',
+          'channel des',
+        ),
+      ),
+      uiLocalNotificationDateInterpretation:
+      UILocalNotificationDateInterpretation.absoluteTime,
+      androidAllowWhileIdle: true,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +190,7 @@ class _BloodSugarScreenState extends State<BloodSugarScreen> {
                               duongHuyet: int.parse(_newDuongHuyet),
                               trangThai: _trangThai,
                             );
+                            displayNotification();
                           }
                         },
                       ),
@@ -340,6 +394,7 @@ class _BloodSugarScreenState extends State<BloodSugarScreen> {
                                                       "timestamp":
                                                           DateTime.now(),
                                                     });
+                                                    displayNotification();
                                                   },
                                                 ),
                                               ],
@@ -671,9 +726,10 @@ class _BloodSugarScreenState extends State<BloodSugarScreen> {
     );
   }
 
+  Color selectionColor = Colors.green[200];
   Container buildLoiKhuyen(
       BuildContext context, int duongHuyet, String trangThai) {
-    Color selectionColor = Colors.green[200];
+
     String suggestion = "";
 
     if (trangThai == "No") {

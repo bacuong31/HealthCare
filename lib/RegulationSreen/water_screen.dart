@@ -5,23 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-//import 'package:health_care/LocalNotifyManager.dart';
 import 'package:health_care/constants.dart';
 
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tz;
+
 
 import '../main.dart';
-
-FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
-void initializeSetting() async {
-  var initAndoir = AndroidInitializationSettings('app_notification_icon');
-  var initSetting = InitializationSettings(android: initAndoir);
-  flutterLocalNotificationsPlugin.initialize(initSetting);
-}
 
 class ChiSoNuoc {
   final int luongNuoc;
@@ -65,40 +53,10 @@ class _WaterConsumptionScreenState extends State<WaterConsumptionScreen> {
   ];
 
   @override
-  void initState() {
-    initializeSetting();
-    tz.initializeTimeZones();
-    super.initState();
-  }
-
-  Future<void> displayNotification() async {
-    print("sent noti");
-    flutterLocalNotificationsPlugin.zonedSchedule(
-      0,
-      "title",
-      "body",
-      tz.TZDateTime.now(tz.local).add(Duration(
-        seconds: 5,
-      )),
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'channel id',
-          'channel name',
-          'channel des',
-        ),
-      ),
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      androidAllowWhileIdle: true,
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await displayNotification();
           showDialog(
             context: context,
             builder: (context) {

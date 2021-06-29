@@ -8,7 +8,18 @@ import 'package:health_care/constants.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../main.dart';
 
-//TODO: timer push notification to measurement
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
+
+void initializeSetting() async {
+  var initAndroid = AndroidInitializationSettings('app_notification_icon');
+  var initSetting = InitializationSettings(android: initAndroid);
+  flutterLocalNotificationsPlugin.initialize(initSetting);
+}
 
 class ChiSoHuyetAp {
   final int tamThu;
@@ -54,6 +65,44 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
     "Bạn đang có bệnh lý về huyết áp. Hãy liên hệ với bác sĩ để được tư vấn và điều trị",
     "Nguy hiểm! Huyết áp của bạn đang rất cao. Hãy đến cơ sở y tế gần nhất để kiểm tra và điều trị"
   ];
+
+  @override
+  void initState() {
+    initializeSetting();
+    tz.initializeTimeZones();
+    super.initState();
+  }
+
+  Future<void> displayNotification() async {
+    print("Notification is sent");
+    flutterLocalNotificationsPlugin.cancel(0);
+    Duration duration;
+    if (selectionColor == normalState) {
+      duration = new Duration(days: 14);
+    }
+    if (selectionColor == warningState) {
+      duration = new Duration(days: 3);
+    }
+    if (selectionColor == dangerousState) {
+      duration = new Duration(seconds: 3);
+    }
+    flutterLocalNotificationsPlugin.zonedSchedule(
+      0,
+      "Nhắc nhở",
+      "Đây là thông báo nhắc nhở đo chỉ số huyết áp",
+      tz.TZDateTime.now(tz.local).add(duration),
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'channel id',
+          'channel name',
+          'channel des',
+        ),
+      ),
+      uiLocalNotificationDateInterpretation:
+      UILocalNotificationDateInterpretation.absoluteTime,
+      androidAllowWhileIdle: true,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +172,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                         postToFireStore(
                             tamThu: int.parse(_newTamThu),
                             tamTruong: int.parse(_newTamTruong));
+                        displayNotification();
                       }
                     },
                   ),
@@ -307,6 +357,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                                                       int.parse(_newTamTruong),
                                                   "timestamp": DateTime.now(),
                                                 });
+                                                displayNotification();
                                               },
                                             ),
                                           ],
@@ -576,8 +627,8 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
     );
   }
 
+  Color selectionColor = normalState;
   Container buildLoiKhuyen(BuildContext context, int _tamThu, int _tamTruong) {
-    Color selectionColor = null;
     String suggestion = null;
 
     if (_tamThu < 90) {

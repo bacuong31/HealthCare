@@ -8,6 +8,19 @@ import 'package:health_care/constants.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../main.dart';
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
+
+void initializeSetting() async {
+  var initAndroid = AndroidInitializationSettings('app_notification_icon');
+  var initSetting = InitializationSettings(android: initAndroid);
+  flutterLocalNotificationsPlugin.initialize(initSetting);
+}
+
 class ChiSoNhipTim {
   final int nhipTim;
   final DateTime ngayCapNhat;
@@ -46,6 +59,44 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
     "Nhịp tim của bạn đang ở mức bình thường.",
     "Nhịp tim của bạn nhanh hơn bình thường. Bạn đang có dấu hiệu bệnh lý về tim mạch. Hãy đến gặp bác sĩ để tìm hiểu thêm."
   ];
+
+  @override
+  void initState() {
+    initializeSetting();
+    tz.initializeTimeZones();
+    super.initState();
+  }
+
+  Future<void> displayNotification() async {
+    print("Notification is sent");
+    flutterLocalNotificationsPlugin.cancel(2);
+    Duration duration;
+    if (selectionColor == normalState) {
+      duration = new Duration(days: 14);
+    }
+    if (selectionColor == warningState) {
+      duration = new Duration(days: 3);
+    }
+    if (selectionColor == dangerousState) {
+      duration = new Duration(seconds: 3);
+    }
+    flutterLocalNotificationsPlugin.zonedSchedule(
+      2,
+      "Nhắc nhở",
+      "Đây là thông báo nhắc nhở đo chỉ số nhịp tim",
+      tz.TZDateTime.now(tz.local).add(duration),
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'channel id',
+          'channel name',
+          'channel des',
+        ),
+      ),
+      uiLocalNotificationDateInterpretation:
+      UILocalNotificationDateInterpretation.absoluteTime,
+      androidAllowWhileIdle: true,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +153,7 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
                         postToFireStore(
                           nhipTim: int.parse(_newNhipTim),
                         );
+                        displayNotification();
                       }
                     },
                   ),
@@ -256,6 +308,7 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
                                                       int.parse(_newNhipTim),
                                                   "timestamp": DateTime.now(),
                                                 });
+                                                displayNotification();
                                               },
                                             ),
                                           ],
@@ -482,8 +535,9 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
     );
   }
 
+  Color selectionColor = normalState;
   Container buildLoiKhuyen(BuildContext context, int _nhipTim) {
-    Color selectionColor = Colors.green[200];
+
     String suggestion = "";
     if (_nhipTim <= 100){
       suggestion = loiKhuyen[0];
