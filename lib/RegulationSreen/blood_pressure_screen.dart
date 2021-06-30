@@ -169,10 +169,21 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                           duration: Duration(seconds: 2),
                         ));
                       } else {
-                        postToFireStore(
-                            tamThu: int.parse(_newTamThu),
-                            tamTruong: int.parse(_newTamTruong));
-                        displayNotification();
+                        if (int.parse(_newTamTruong) < int.parse(_newTamThu)) {
+                          postToFireStore(
+                              tamThu: int.parse(_newTamThu),
+                              tamTruong: int.parse(_newTamTruong));
+                          displayNotification();
+                        }
+                        else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                              "Thất bại, chỉ số huyết tâm thu cần lớn hơn tâm trương",
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                            duration: Duration(seconds: 2),
+                          ));
+                        }
                       }
                     },
                   ),
@@ -345,19 +356,34 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                                                   'Lưu thay đổi'.toUpperCase()),
                                               onPressed: () {
                                                 Navigator.pop(context);
-                                                FirebaseFirestore.instance
-                                                    .collection(
+                                                  if (int.parse(_newTamTruong)< int.parse(_newTamThu))
+                                                {
+
+                                                    FirebaseFirestore.instance
+                                                        .collection(
                                                         'blood_pressure')
-                                                    .doc(listChiSoHuyetAp
+                                                        .doc(listChiSoHuyetAp
                                                         .last.id)
-                                                    .update({
-                                                  "tamThu":
+                                                        .update({
+                                                      "tamThu":
                                                       int.parse(_newTamThu),
-                                                  "tamTruong":
+                                                      "tamTruong":
                                                       int.parse(_newTamTruong),
-                                                  "timestamp": DateTime.now(),
-                                                });
-                                                displayNotification();
+                                                      "timestamp": DateTime
+                                                          .now(),
+                                                    });
+                                                    displayNotification();
+
+                                                }
+                                                  else {
+                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                                      content: Text(
+                                                        "Thất bại, chỉ số huyết tâm thu cần lớn hơn tâm trương",
+                                                        style: TextStyle(fontSize: 16.0),
+                                                      ),
+                                                      duration: Duration(seconds: 2),
+                                                    ));
+                                                  }
                                               },
                                             ),
                                           ],
