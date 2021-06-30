@@ -47,7 +47,7 @@ class SignInScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Text(
-            'Sign in',
+            'Đăng nhập',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 36.0,
@@ -55,11 +55,11 @@ class SignInScreen extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 30,
+            height: 50,
           ),
           SocialSignInButton(
             assetName: 'assets/images/google-logo.png',
-            text: 'Sign in with Google',
+            text: 'Đăng nhập bằng Google',
             textColor: Colors.black87,
             onPressed: _signInWithGoogle,
             color: Colors.white,
@@ -69,12 +69,12 @@ class SignInScreen extends StatelessWidget {
           ),
           SocialSignInButton(
             assetName: 'assets/images/facebook-logo.png',
-            text: 'Sign in with Facebook',
+            text: 'Đăng nhập bằng Facebook',
             textColor: Colors.white,
             onPressed: _signInWithFacebook,
             color: Color(0xff334d92),
           ),
-          SizedBox(
+          /*SizedBox(
             height: 15,
           ),
           SignInButton(
@@ -82,7 +82,7 @@ class SignInScreen extends StatelessWidget {
             textColor: Colors.white,
             onPressed: () {},
             color: Color(0xdb709988),
-          ),
+          ),*/
         ],
       ),
     );

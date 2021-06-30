@@ -114,7 +114,7 @@ class _MainScreenState extends State<MainScreen> {
     } catch (e) {
       print(e.toString());
     }
-    currentUser = null;
+    //currentUser = null;
   }
 
   @override
