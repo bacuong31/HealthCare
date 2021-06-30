@@ -77,7 +77,7 @@ class DataSearch extends SearchDelegate<String> {
           color: Colors.white,
           child: Center(
             child: Text(
-              query,
+              "Không có thông tin về bệnh vừa tìm kiếm!",
               style: TextStyle(color: Colors.black),
             ),
           ),
