@@ -462,16 +462,7 @@ class _ProfileState extends State<Profile> {
     await _selectNewImage(context);
   }
 
-  reloadCurrentModelUserData() async {
-    DocumentSnapshot userRecord = await ref.doc(currentUser.id).get();
-    if (userRecord.data() != null) {}
-    userRecord = await ref.doc(currentUser.id).get();
-    currentUser = await AppUser.fromDocument(userRecord);
-    //print("[IN-FUNCTION edited photo url] " + currentUser.photoUrl);
-  }
-
   applyChanges() async {
-
     if (file != null) {
       if (currentUser.photoUrl != "") {
         Reference ref =
@@ -498,7 +489,22 @@ class _ProfileState extends State<Profile> {
         "sex": _sexual
       }).whenComplete(() async => {reloadCurrentModelUserData()});
     }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        "Cập nhật thông tin cá nhân thành công",
+        style: TextStyle(fontSize: 16.0),
+      ),
+      duration: Duration(seconds: 2),
+    ));
   }
+}
+
+reloadCurrentModelUserData() async {
+  DocumentSnapshot userRecord = await ref.doc(currentUser.id).get();
+  if (userRecord.data() != null) {}
+  userRecord = await ref.doc(currentUser.id).get();
+  currentUser = await AppUser.fromDocument(userRecord);
+  //print("[IN-FUNCTION edited photo url] " + currentUser.photoUrl);
 }
 
 class AlwaysDisabledFocusNode extends FocusNode {

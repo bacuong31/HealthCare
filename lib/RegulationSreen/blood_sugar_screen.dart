@@ -207,7 +207,7 @@ class _BloodSugarScreenState extends State<BloodSugarScreen> {
       appBar: AppBar(
         title: Transform(
             transform: Matrix4.translationValues(-28, 0.0, 0.0),
-            child: Center(child: Text("Trạng thái"))),
+            child: Center(child: Text("Đường huyết"))),
       ),
       body: StreamBuilder<List<ChiSoDuongHuyet>>(
           stream: _getChiSoDuongHuyet(),
